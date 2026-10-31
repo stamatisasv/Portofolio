@@ -78,3 +78,6 @@ footer { padding-bottom: 90px; }
   .mobile-menu nav a { display: flex; align-items: center; min-height: 44px; padding: 8px 0; }
   .mobile-menu > .social-links { position: static; justify-content: flex-start; gap: 2px; }
 }
+
+.gmail-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.contact .social-links > .gmail-link { justify-content: flex-start; }

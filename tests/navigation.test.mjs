@@ -57,3 +57,26 @@ test('direct Contact load and browser back preserve route rendering',async()=>{
   assert.equal(c.window.location.hash,'#/contact');assert.ok(c.doc.querySelector('main .contact'));
  }finally{await c.window.happyDOM.close()}
 });
+test('email links remain native and menu stays enabled during mail app handoff',async()=>{
+ const c=await setup('#/contact');
+ try{
+  c.button.click();
+  let intercepted=false;
+  c.doc.addEventListener('click',event=>{if(event.target.closest?.('a[href^="mailto:"]')){intercepted=event.defaultPrevented;event.preventDefault()}});
+  for(const email of c.doc.querySelectorAll('a[href^="mailto:"]')){
+   assert.equal(email.getAttribute('href'),'mailto:asvestasstamatis@gmail.com');
+   assert.equal(email.hasAttribute('target'),false);
+   const event=new c.window.MouseEvent('click',{bubbles:true,cancelable:true});
+   email.dispatchEvent(event);
+   assert.equal(intercepted,false);
+  }
+  if(c.menu.inert)c.button.click();
+  c.menu.querySelector('a[href^="mailto:"]').click();
+  await c.settle();
+  assert.equal(c.menu.inert,false,'External app launch must not disable the menu');
+  for(const root of [c.menu,c.doc.querySelector('main')]){
+   const gmail=root.querySelector('.gmail-link');
+   assert.equal(new URL(gmail.href).searchParams.get('to'),'asvestasstamatis@gmail.com');
+  }
+ }finally{await c.window.happyDOM.close()}
+});

@@ -27,6 +27,10 @@ function contacts(showDetails=false){
   }
   box.append(a);
  }
+ if(site.email&&showDetails){
+  const gmail=link('Write using Gmail ↗',`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(site.email)}`,'gmail-link');
+  gmail.target='_blank';gmail.rel='noopener noreferrer';box.append(gmail);
+ }
  return box;
 }
 const skip=link('Skip to content','#main','skip');skip.onclick=e=>{e.preventDefault();main.focus()};
@@ -37,7 +41,9 @@ header.append(nav,brand,contacts(),toggle);
 const main=el('main');main.id='main';main.tabIndex=-1;
 const footer=el('footer');footer.append(el('span','',`© ${new Date().getFullYear()} ${site.name}`),link('Back to top ↑','#top'));footer.querySelector('a')!.onclick=e=>{e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})};
 const dialog=el('div','mobile-menu');dialog.id='mobile-menu';dialog.inert=true;
-const mobileNav=el('nav');mobileNav.setAttribute('aria-label','Mobile navigation');mobileNav.append(link('My work','#/'),link('Contact','#/contact'));dialog.append(mobileNav,contacts());header.append(dialog);
+const mobileNav=el('nav');mobileNav.setAttribute('aria-label','Mobile navigation');mobileNav.append(link('My work','#/'),link('Contact','#/contact'));dialog.append(mobileNav,contacts());
+if(site.email){const gmail=link('Write using Gmail ↗',`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(site.email)}`,'gmail-link');gmail.target='_blank';gmail.rel='noopener noreferrer';dialog.append(gmail)}
+header.append(dialog);
 const toTop=el('button','scroll-top','↑');
 toTop.type='button';toTop.setAttribute('aria-label','Scroll to top');toTop.tabIndex=-1;toTop.setAttribute('aria-hidden','true');
 toTop.onclick=()=>{window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});main.focus({preventScroll:true})};
@@ -73,8 +79,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',event=>{
  closeMenu(false);
  if(location.hash===route)render();else location.hash=route;
 }));
-// Let external links finish their native activation before hiding the menu.
-dialog.querySelectorAll('.social-links a').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>closeMenu(false),0)}));
+// Keep external links native: hiding their parent can interrupt app handoff on mobile.
 matchMedia('(min-width: 768px)').addEventListener('change',e=>{if(e.matches)closeMenu(false)});
 function card(p:Project,i=2){const a=link('',`#/project/${p.slug}`,'project-card');a.append(image(p.cover,i<2));a.style.setProperty('--position',p.coverPosition||'center');const label=el('span','card-label');label.append(el('span','card-title',p.title),el('span','card-meta',[p.year,p.demo?'Demo study':null].filter(Boolean).join(' · ')));a.append(label);a.setAttribute('aria-label',`${p.title}${p.demo?' — demo study':''}`);return a}
 function grid(list:Project[]){const box=el('div','work-grid');list.forEach((p,i)=>box.append(card(p,i)));return box}
