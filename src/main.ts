@@ -63,7 +63,14 @@ toggle.onclick=()=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen){e.preventDefault();closeMenu();toggle.focus()}});
 document.addEventListener('click',e=>{if(e.target instanceof Node&&!header.contains(e.target))closeMenu(false)});
 header.addEventListener('focusout',()=>{queueMicrotask(()=>{if(!header.contains(document.activeElement))closeMenu(false)})});
-dialog.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>closeMenu()));
+mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',event=>{
+ event.preventDefault();
+ const route=a.getAttribute('href')!;
+ closeMenu(false);
+ if(location.hash===route)render();else location.hash=route;
+}));
+// Let external links finish their native activation before hiding the menu.
+dialog.querySelectorAll('.social-links a').forEach(a=>a.addEventListener('click',()=>{setTimeout(()=>closeMenu(false),0)}));
 matchMedia('(min-width: 768px)').addEventListener('change',e=>{if(e.matches)closeMenu(false)});
 function card(p:Project,i=2){const a=link('',`#/project/${p.slug}`,'project-card');a.append(image(p.cover,i<2));a.style.setProperty('--position',p.coverPosition||'center');const label=el('span','card-label');label.append(el('span','card-title',p.title),el('span','card-meta',[p.year,p.demo?'Demo study':null].filter(Boolean).join(' · ')));a.append(label);a.setAttribute('aria-label',`${p.title}${p.demo?' — demo study':''}`);return a}
 function grid(list:Project[]){const box=el('div','work-grid');list.forEach((p,i)=>box.append(card(p,i)));return box}
