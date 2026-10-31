@@ -14,7 +14,15 @@ header.append(nav,brand,contacts(),toggle);
 const main=el('main');main.id='main';main.tabIndex=-1;
 const footer=el('footer');footer.append(el('span','',`© ${new Date().getFullYear()} ${site.name}`),link('Back to top ↑','#top'));footer.querySelector('a')!.onclick=e=>{e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})};
 const dialog=el('dialog','mobile-menu');dialog.id='mobile-menu';dialog.setAttribute('aria-label','Navigation');const close=el('button','menu-close','×');close.setAttribute('aria-label','Close menu');const mobileNav=el('nav');mobileNav.append(link('My work','#/'),link('Contact','#/contact'));dialog.append(close,mobileNav,contacts());
-app.append(skip,header,main,footer,dialog);
+const toTop=el('button','scroll-top','↑');
+toTop.type='button';toTop.setAttribute('aria-label','Scroll to top');toTop.tabIndex=-1;toTop.setAttribute('aria-hidden','true');
+toTop.onclick=()=>{window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});main.focus({preventScroll:true})};
+app.append(skip,header,main,footer,dialog,toTop);
+const topObserver=new IntersectionObserver(([entry])=>{
+ const visible=!!entry&&!entry.isIntersecting;
+ toTop.classList.toggle('is-visible',visible);toTop.tabIndex=visible?0:-1;toTop.setAttribute('aria-hidden',String(!visible));
+},{rootMargin:'200px 0px 0px 0px'});
+topObserver.observe(header);
 let lockedY=0;
 function closeMenu(){if(!dialog.open)return;dialog.close();document.body.style.position='';document.body.style.top='';document.body.style.width='';window.scrollTo(0,lockedY);toggle.setAttribute('aria-expanded','false');toggle.focus()}
 toggle.onclick=()=>{lockedY=scrollY;dialog.showModal();document.body.style.position='fixed';document.body.style.top=`-${lockedY}px`;document.body.style.width='100%';toggle.setAttribute('aria-expanded','true');close.focus()};close.onclick=closeMenu;dialog.addEventListener('cancel',e=>{e.preventDefault();closeMenu()});dialog.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));matchMedia('(min-width: 768px)').addEventListener('change',e=>{if(e.matches)closeMenu()});

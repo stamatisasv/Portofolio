@@ -2,3 +2,38 @@
 
 /* Stronger navigation and project titles balance the lighter name. */
 nav,.card-title,.project-intro h1{font-weight:700}
+
+/* Quiet floating control, kept clear of device safe areas. */
+.scroll-top {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 5;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #ffffff30;
+  border-radius: 50%;
+  background: #202020e8;
+  color: #f7f7f5;
+  font-size: 23px;
+  font-weight: 300;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 220ms, transform 220ms, visibility 220ms, background 180ms;
+}
+.scroll-top.is-visible { opacity: .85; visibility: visible; transform: translateY(0); }
+.scroll-top:hover, .scroll-top:focus-visible { opacity: 1; background: #383838; }
+footer { padding-bottom: 90px; }
+/* The native dialog retains its focus trap throughout the entrance. */
+.mobile-menu[open] { animation: menu-enter 260ms ease-out both; }
+.mobile-menu[open] nav { animation: menu-links-enter 340ms ease-out both; }
+@keyframes menu-enter { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes menu-links-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 767px) {
+  .card-title { font-family: 'Avenir Next', Avenir, 'Helvetica Neue', sans-serif; font-size: 15px; font-weight: 400; letter-spacing: .1em; }
+  .card-meta { font-size: 10px; letter-spacing: .06em; }
+  .card-label { padding: 12px 20px; gap: 4px; }
+  .project-intro h1 { font-family: 'Avenir Next', Avenir, 'Helvetica Neue', sans-serif; font-size: 22px; font-weight: 400; letter-spacing: .1em; }
+  .scroll-top { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); }
+}
