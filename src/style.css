@@ -37,3 +37,8 @@ footer { padding-bottom: 90px; }
   .project-intro h1 { font-family: 'Avenir Next', Avenir, 'Helvetica Neue', sans-serif; font-size: 22px; font-weight: 400; letter-spacing: .1em; }
   .scroll-top { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); }
 }
+
+.social-links a { min-width: 44px; justify-content: center; color: var(--muted); transition: color 180ms; }
+.social-links a:hover, .social-links a:focus-visible { color: var(--text); }
+.header > .social-links { gap: 4px; }
+.contact .social-links svg { width: 24px; height: 24px; }
