@@ -62,7 +62,11 @@ toggle.onclick=()=>{
 };
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menuOpen){e.preventDefault();closeMenu();toggle.focus()}});
 document.addEventListener('click',e=>{if(e.target instanceof Node&&!header.contains(e.target))closeMenu(false)});
-header.addEventListener('focusout',()=>{queueMicrotask(()=>{if(!header.contains(document.activeElement))closeMenu(false)})});
+// Touch browsers may blur the trigger before dispatching a link's click.
+// Close on outside pointer activation or Escape, never on a transient blur.
+header.addEventListener('keydown',event=>{
+ if(event.key==='Tab')setTimeout(()=>{if(!header.contains(document.activeElement))closeMenu(false)},0);
+});
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',event=>{
  event.preventDefault();
  const route=a.getAttribute('href')!;
