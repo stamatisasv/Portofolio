@@ -50,3 +50,12 @@ footer { padding-bottom: 90px; }
 @media (pointer: coarse) {
   .social-links a { min-width: 44px; }
 }
+
+/* Formspace owns field styling and submission feedback inside its iframe. */
+.contact-form { text-align: left; margin-bottom: 24px; }
+.contact-embed { width: 100%; min-width: 0; }
+.contact-embed iframe { min-height: 560px; max-width: 100%; }
+.contact .contact-fallback { margin: 18px 0; font-size: 13px; text-align: center; }
+.contact-fallback a { text-decoration: underline; text-underline-offset: 3px; }
+.contact-embed .fs-loading { background: var(--bg); border-radius: 0; }
+@media (prefers-reduced-motion: reduce) { .contact-embed .fs-spinner { animation: none; } }

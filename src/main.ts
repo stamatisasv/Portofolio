@@ -1,4 +1,5 @@
 import './style.css';
+import {contactForm} from './components/contact-form';
 import {site} from './data/site';
 import {projects} from './data/projects';
 import type {Project} from './types';
@@ -51,7 +52,7 @@ function render(){
  closeMenu();const route=location.hash||'#/';main.replaceChildren();let title='My work';
  header.querySelectorAll('nav a').forEach(a=>{if(a.getAttribute('href')===(route==='#/contact'?'#/contact':'#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  if(route==='#/') {const heading=el('h1','sr-only','Photography and video');main.append(heading,grid(available));if(!available.length)main.append(el('p','empty','New work will be shared here soon.'));if(available.some(p=>p.demo))main.append(el('p','demo-note','Demo visual studies · Original photography and films coming soon.'))}
- else if(route==='#/contact'){title='Contact';const section=el('section','contact');section.append(el('h1','','Contact'));if(site.bio)section.append(el('p','',site.bio));section.append(contacts());if(!site.email&&!site.instagram&&!site.linkedin)section.append(el('p','','Contact details will be added soon.'));main.append(section)}
+ else if(route==='#/contact'){title='Contact';const section=el('section','contact');section.append(el('h1','','Contact'));if(site.bio)section.append(el('p','',site.bio));section.append(contactForm(),contacts());if(!site.email&&!site.instagram&&!site.linkedin)section.append(el('p','','Contact details will be added soon.'));main.append(section)}
  else {const p=available.find(p=>route===`#/project/${p.slug}`);if(p){title=p.title;const intro=el('div','project-intro');intro.append(el('h1','',p.title));if(p.demo)intro.append(el('p','eyebrow','Demo visual study'));const gallery=el('section','gallery');gallery.setAttribute('aria-label',`${p.title} gallery`);p.blocks.forEach(b=>gallery.append(media(b)));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=related.length?related:available.filter(q=>q.id!==p.id).slice(0,2);if(recommendations.length){const section=el('section','related');section.append(el('h2','','You may also like'),grid(recommendations));main.append(section)}main.append(link('← Back to work','#/','back-link'))}else{title='Page not found';const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
  document.title=`${title} — ${site.name}`;if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }
