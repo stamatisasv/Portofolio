@@ -51,11 +51,11 @@ footer { padding-bottom: 90px; }
   .social-links a { min-width: 44px; }
 }
 
-/* Formspace owns field styling and submission feedback inside its iframe. */
-.contact-form { text-align: left; margin-bottom: 24px; }
-.contact-embed { width: 100%; min-width: 0; }
-.contact-embed iframe { min-height: 560px; max-width: 100%; }
-.contact .contact-fallback { margin: 18px 0; font-size: 13px; text-align: center; }
-.contact-fallback a { text-decoration: underline; text-underline-offset: 3px; }
-.contact-embed .fs-loading { background: var(--bg); border-radius: 0; }
-@media (prefers-reduced-motion: reduce) { .contact-embed .fs-spinner { animation: none; } }
+/* Direct contact links keep the contact page simple. */
+.contact > .social-links { flex-direction: column; align-items: stretch; gap: 12px; text-align: left; }
+.contact .contact-detail { justify-content: flex-start; gap: 20px; padding: 18px 0; min-height: 72px; }
+.contact-detail svg { flex-shrink: 0; }
+.contact-detail-text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.contact-detail-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.contact-detail-value { font-size: clamp(14px, 2vw, 17px); line-height: 1.6; overflow-wrap: anywhere; color: var(--text); }
+.contact-detail:hover .contact-detail-value { text-decoration: underline; text-underline-offset: 4px; }
