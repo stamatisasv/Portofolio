@@ -42,3 +42,11 @@ footer { padding-bottom: 90px; }
 .social-links a:hover, .social-links a:focus-visible { color: var(--text); }
 .header > .social-links { gap: 4px; }
 .contact .social-links svg { width: 24px; height: 24px; }
+
+/* Compact social icons; retain larger targets on touch screens. */
+.social-links { gap: 2px; }
+.social-links a { min-width: 32px; }
+.header > .social-links { gap: 2px; }
+@media (pointer: coarse) {
+  .social-links a { min-width: 44px; }
+}
