@@ -99,3 +99,11 @@ footer { padding-bottom: 90px; }
   .card-subtitle { font-size: 12px; text-align: left; }
 }
 .gallery > .video { width: min(100%, 540px); align-self: center; }
+
+/* Strong image treatment keeps project labels crisp on hover. */
+.project-card { overflow: hidden; }
+.project-card > img { transition: filter 280ms ease, transform 280ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
+}
+.project-card:focus-visible > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
