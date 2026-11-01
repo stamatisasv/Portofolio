@@ -30,3 +30,6 @@ dist-ssr
 # FPV originals retained locally; use 1080p web exports in the site.
 /public/media/projects/athens/anogfpvreel.mp4
 /public/media/projects/athens/karabi-sporrts.mp4
+
+# Retained 3-minute documentary copy; the site uses the 2-minute web export.
+/public/media/projects/pappoudes/video-2.mp4

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,readdir} from 'node:fs/promises';
+import {readFile,readdir,access} from 'node:fs/promises';
 import {Window} from 'happy-dom';
 
 const files=await readdir(new URL('../dist/assets/',import.meta.url));
@@ -85,7 +85,7 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,20);
+  assert.equal(routes.length,25);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
@@ -93,7 +93,7 @@ test('every project page includes a recommendations carousel after its gallery',
    assert.ok(gallery,route);
    if(!['#/project/skin-care-lab','#/project/reborn'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
-    assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$/,route);
+    assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
     assert.equal(gallery.querySelector(':scope > img'),null);
     assert.ok([...gallery.querySelectorAll('.postcard-grid img')].every(img=>!/giveaway/i.test(img.alt)));
@@ -115,7 +115,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,20);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,25);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -257,7 +257,7 @@ test('home projects and carousel are ordered newest year first',async()=>{
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
    const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].map(el=>Number(el.textContent));
-   assert.equal(years.length,20);
+   assert.equal(years.length,25);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
    assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
   }
@@ -494,12 +494,12 @@ test('Lemnian Honey serves responsive WebP photos, four films, and two brochure 
  }finally{await c.window.happyDOM.close()}
 });
 
-test('Lemnian Honey is the last project dated 2026',async()=>{
+test('Food Photography - Social is the last project dated 2026',async()=>{
  const c=await setup();
  try{
   const cards=[...c.doc.querySelectorAll('main .work-grid > .project-card')];
   const group=cards.filter(card=>card.querySelector('.card-meta').textContent==='2026');
-  assert.equal(group.at(-1).getAttribute('href'),'#/project/lemnian-honey');
+  assert.equal(group.at(-1).getAttribute('href'),'#/project/psomi-alati');
  }finally{await c.window.happyDOM.close()}
 });
 
@@ -524,5 +524,41 @@ test('volume slider adjusts and preserves volume while switching the active vide
   assert.equal(first.volume,0);assert.equal(slider.disabled,false);
   slider.value='.5';slider.dispatchEvent(new c.window.Event('input'));await c.settle();
   assert.equal(first.volume,.5);
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('new content pages contain optimized images, expected clips, and mixed media',async()=>{
+ const c=await setup();
+ try{
+  for(const [slug,photos,clips] of [['samotrace',11,2],['psomi-alati',18,1],['almyro-psomi',12,5],['pappoudes',8,2]]){
+   c.window.location.hash=`#/project/${slug}`;await c.settle();
+   const gallery=c.doc.querySelector('.gallery');
+   assert.equal(gallery.querySelectorAll('video').length,clips,slug);
+   assert.equal(gallery.querySelectorAll('.new-photo-grid img,.mixed-media-grid img').length,photos,slug);
+   assert.ok([...gallery.querySelectorAll('img')].every(img=>img.src.endsWith('.webp')),slug);
+   for(const el of gallery.querySelectorAll('img,video')){const url=el.dataset.source||el.src;await access(new URL(`../public/${new URL(url,'https://example.com').pathname.replace('/Portofolio/','')}`,import.meta.url));}
+   if(slug==='samotrace'){
+    assert.equal(c.doc.querySelector('.project-intro .eyebrow').textContent,'2026');
+    assert.ok(gallery.querySelector('img[alt*=NightPhoto]'));
+   }
+   if(slug==='almyro-psomi'){
+    const mixed=gallery.querySelector('.mixed-media-sections');
+    assert.equal(mixed.querySelector('.mixed-media-grid').firstElementChild.tagName,'IMG');
+    assert.equal(mixed.querySelectorAll('.mixed-wide-videos .video').length,3);
+   }
+  }
+  c.window.location.hash='#/project/olympos';await c.settle();
+  assert.equal(c.doc.querySelector('main h1').textContent,'Olympos');
+  assert.match(c.doc.querySelector('.gallery .caption').textContent,/coming soon/i);
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('2026 client projects follow the requested new order',async()=>{
+ const c=await setup();
+ try{
+  const routes=[...c.doc.querySelectorAll('main .work-grid > a')].map(a=>a.getAttribute('href'));
+  for(const [before,after] of [['longpress','samotrace'],['samotrace','reborn'],['reborn','skin-care-lab'],['skin-care-lab','dumbos']]){
+   assert.equal(routes[routes.indexOf(`#/project/${before}`)+1],`#/project/${after}`);
+  }
  }finally{await c.window.happyDOM.close()}
 });

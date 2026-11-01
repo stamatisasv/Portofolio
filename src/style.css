@@ -293,3 +293,25 @@ footer { padding-bottom: 90px; }
 .video-volume { width: 0; min-width: 0; margin: 0; opacity: 0; visibility: hidden; accent-color: white; cursor: pointer; transition: width 180ms ease, opacity 180ms ease, margin 180ms ease; }
 .video-audio.is-unmuted:hover .video-volume, .video-audio.is-unmuted.keyboard-focus:focus-within .video-volume { width: 100px; margin-left: 14px; opacity: 1; visibility: visible; }
 @media (hover: none) { .video-audio.is-unmuted .video-volume { width: 90px; margin-left: 14px; opacity: 1; visibility: visible; } }
+
+.new-photo-grid, .mixed-media-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: start; margin: 20px 0; }
+.new-photo-grid > img, .mixed-media-grid > img { width: 100%; height: auto; min-width: 0; }
+.mixed-media-grid > .video { min-width: 0; width: 100%; }
+.mixed-media-grid > .video[style*="16 / 9"] { grid-column: span 2; }
+@media (max-width: 767px) {
+ .new-photo-grid, .mixed-media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+ .mixed-media-grid > .video[style*="16 / 9"] { grid-column: 1 / -1; }
+}
+
+/* Pack mixed portrait and landscape media without empty grid-row space. */
+.mixed-media-grid { display: block; columns: 3; column-gap: 8px; margin: 12px 0; }
+.mixed-media-grid > img, .mixed-media-grid > .video { display: block; width: 100%; break-inside: avoid; margin: 0 0 8px; }
+@media (max-width: 767px) { .mixed-media-grid { columns: 2; column-gap: 5px; } .mixed-media-grid > img, .mixed-media-grid > .video { margin-bottom: 5px; } }
+@media (max-width: 480px) { .mixed-media-grid { columns: 1; } }
+
+.mixed-media-sections { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.mixed-media-sections > .mixed-media-grid { margin: 0; }
+.mixed-wide-videos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mixed-wide-videos > .video { min-width: 0; width: 100%; }
+.mixed-wide-videos > .video:only-child { grid-column: 1 / -1; }
+@media (max-width: 900px) { .mixed-wide-videos { grid-template-columns: minmax(0, 1fr); } }

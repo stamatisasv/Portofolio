@@ -1,3 +1,4 @@
+import {additionalProjects} from './new-projects';
 import {honeyPhotos} from './honey';
 import {healinPhotos} from './healin';
 import {skincarePhotos} from './skincare';
@@ -205,8 +206,8 @@ for(let n=138;n<=145;n++)kompiBlocks.push({type:'image',image:{
   ...photo('kompi',`still-${n}`,`Kompi — film still ${n}`,1013,1800),rotation:n<=141?-90:undefined}});
 projects.push({id:'kompi',slug:'kompi',title:'Kompi',year:'2023',cover:kompiCover,blocks:kompiBlocks,published:true});
 
-const honeyCover={...honeyPhotos.find(image=>image.src.endsWith('photo-24-1200.webp'))!,
-  src:'media/projects/lemnian-honey/cover.webp',alt:'Lemnian Honey — honey jars among flowering thyme'};
+const honeyCover={...honeyPhotos.find(image=>image.src.endsWith('photo-21-1200.webp'))!,
+  src:'media/projects/lemnian-honey/cover.webp',alt:'Lemnian Honey — honey jar among flowering thyme'};
 const honeyBlocks:MediaBlock[]=Array.from({length:4},(_,i)=>({type:'video',provider:'file',
   source:`media/projects/lemnian-honey/video-${i+1}.mp4`,poster:honeyCover,
   title:`Lemnian Honey — product film ${i+1}`,aspectRatio:'9 / 16'}));
@@ -215,6 +216,8 @@ honeyBlocks.push({type:'row',images:[1,2].map(n=>({src:`media/projects/lemnian-h
   alt:`Lemnian Honey — Bontelas brochure, page ${n}`,width:1600,height:1131}))});
 projects.push({id:'lemnian-honey',slug:'lemnian-honey',title:'Lemnian Honey',year:'2026',category:'Product Photography & Video',
   cover:honeyCover,coverPosition:'center 58%',blocks:honeyBlocks,published:true});
+
+projects.push(...additionalProjects);
 
 // Stable sorting preserves the curated order for projects from the same year.
 projects.sort((a,b)=>Number(b.year||0)-Number(a.year||0));
@@ -231,3 +234,10 @@ function moveProjectAfter(id:string,afterId:string){
 moveProjectAfter('athens','shisha-nomads');
 moveProjectAfter('cypher','athens');
 moveProjectAfter('dolomites','euro-zese');
+
+moveProjectAfter('samotrace','longpress');
+moveProjectAfter('reborn','samotrace');
+moveProjectAfter('skin-care-lab','reborn');
+moveProjectAfter('dumbos','skin-care-lab');
+const last2026=projects.filter(project=>project.year==='2026'&&project.id!=='psomi-alati').at(-1)!;
+moveProjectAfter('psomi-alati',last2026.id);
