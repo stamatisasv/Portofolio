@@ -1,14 +1,31 @@
-import type { Photo, Project } from '../types';
-const photo = (name:string, alt:string):Photo => ({src:`media/demo/${name}.svg`,alt,width:1600,height:1000});
-const studies = [
-  photo('ridge','Demo illustration: layered mountain ridges beneath a pale sky'),
-  photo('shore','Demo illustration: a quiet shoreline and distant island'),
-  photo('structure','Demo illustration: sunlit architectural planes and a dark doorway'),
-  photo('dusk','Demo illustration: a low sun over a dark sea'),
+import type { Photo, Project, MediaBlock } from '../types';
+
+const photo = (slug:string, name:string, alt:string, width=1600, height=900):Photo => ({
+  src:`media/projects/${slug}/${name}.jpg`,alt,width,height,
+});
+const polaroidSizes = [[805,1006],[1000,724],[1000,913],[1000,1046]] as const;
+const polaroid = (i:number) => photo('ase-me-mono',`polaroid-${i}`,`Ase Me Mono — polaroid ${i}`,polaroidSizes[i-1]![0],polaroidSizes[i-1]![1]);
+const entries = [
+  {slug:'ase-me-mono',artist:'Karnalh',title:'Ase Me Mono',year:'2024',hasMedia:true},
+  {slug:'gia-panta',artist:'Karnalh',title:'Gia Panta',year:'2024',hasMedia:true},
+  {slug:'cypher',artist:'StreetVerse',title:'Cypher',year:'2025',hasMedia:true},
+  {slug:'streetverse131',artist:'StreetVerse',title:'StreetVerse131',year:'2026',hasMedia:false},
+  {slug:'mona-lisa',artist:'Karnalh',title:'Mona Lisa',year:'2025',hasMedia:false},
+  {slug:'longpress',artist:'Zese',title:'LongPress',year:'2026',hasMedia:true},
 ];
-export const projects:Project[] = studies.map((cover,i)=>({
-  id:`study-${i+1}`,slug:`visual-study-${i+1}`,title:['Ridge study','Shore study','Space study','Dusk study'][i]!,
-  cover,published:true,demo:true,
-  blocks:[{type:'image',image:cover},{type:'caption',text:'Demo visual study — replace with your own photographs or film.'},{type:'row',images:[studies[(i+1)%4]!,studies[(i+2)%4]!]},{type:'image',image:studies[(i+3)%4]!}],
-  relatedIds:[`study-${(i+1)%4+1}`,`study-${(i+2)%4+1}`],
-}));
+export const projects:Project[] = entries.map(entry=>{
+  const {slug,artist,title,year,hasMedia}=entry;
+  const cover=hasMedia?photo(slug,'cover',`${artist} — ${title}`,...(slug==='gia-panta'||slug==='longpress'?[899,1600] as const:[1920,1080] as const)):{
+    src:'media/projects/pending.svg',alt:`${artist} — ${title}: media coming soon`,width:1600,height:900,
+  };
+  const blocks:MediaBlock[]=hasMedia?[{
+    type:'video',provider:'file',source:`media/projects/${slug}/film.mp4`,poster:cover,
+    title:`${artist} — ${title}`,aspectRatio:'9 / 16',
+  }]:[{type:'caption',text:'Project media coming soon.'}];
+  if(slug==='ase-me-mono'){
+    blocks.push({type:'row',images:[1,2].map(polaroid)},
+      {type:'row',images:[3,4].map(polaroid)});
+  }
+  return {id:slug,slug,artist,title,year,category:'Music Video Clip',cover,blocks,published:true,
+    relatedIds:entries.filter(p=>p.slug!==slug&&p.artist===artist).map(p=>p.slug)};
+});

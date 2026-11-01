@@ -88,3 +88,14 @@ footer { padding-bottom: 90px; }
 .contact-page > footer { justify-content: flex-start; }
 .contact-page > footer a, .contact-page > .scroll-top { display: none; }
 .contact-page .mobile-menu > .gmail-link { display: none; }
+
+/* Artist, film title, and year follow the same hierarchy throughout the work. */
+.card-subtitle { font-size: clamp(12px, 1.2vw, 17px); line-height: 1.5; text-align: center; }
+.project-subtitle { margin: 0 0 16px; font-size: clamp(15px, 2vw, 20px); line-height: 1.5; }
+.project-intro .eyebrow { margin: 0; }
+.video { overflow: hidden; }
+.video video { display: block; object-fit: contain; }
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+  .card-subtitle { font-size: 12px; text-align: left; }
+}
+.gallery > .video { width: min(100%, 540px); align-self: center; }
