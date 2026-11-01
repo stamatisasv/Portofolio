@@ -6,7 +6,15 @@ const photo = (slug:string, name:string, alt:string, width=1600, height=900):Pho
 const polaroidSizes = [[805,1006],[1000,724],[1000,913],[1000,1046]] as const;
 const polaroid = (i:number) => photo('ase-me-mono',`polaroid-${i}`,`Ase Me Mono — polaroid ${i}`,polaroidSizes[i-1]![0],polaroidSizes[i-1]![1]);
 // Add direct YouTube watch URLs here as they become available, keyed by project slug.
-const youtubeUrls:Record<string,string> = {};
+const youtubeUrls:Record<string,string> = {
+  'longpress': 'https://www.youtube.com/watch?v=rx27jOGNGq0',
+  'ase-me-mono': 'https://www.youtube.com/watch?v=X2Kp8aB2Zh0',
+  'mona-lisa': 'https://www.youtube.com/watch?v=EkEypDsakKY',
+  'cypher': 'https://www.youtube.com/watch?v=QBl10fkJrAE',
+  'ftera': 'https://www.youtube.com/watch?v=E5JrhNI_lOk',
+  'streetverse131': 'https://www.youtube.com/watch?v=qXZX1YpSxbs',
+  'euro-zese': 'https://www.youtube.com/watch?v=qXZX1YpSxbs',
+};
 const entries = [
   {slug:'ase-me-mono',artist:'Karnalh',title:'Ase Me Mono',year:'2024',hasMedia:true},
   {slug:'gia-panta',artist:'Karnalh',title:'Gia Panta',year:'2024',hasMedia:true},
