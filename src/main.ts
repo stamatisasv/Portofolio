@@ -36,20 +36,12 @@ const brand=link(site.name,'#/','brand');const toggle=el('button','menu-toggle')
 for(let i=0;i<3;i++){const line=el('span');line.setAttribute('aria-hidden','true');toggle.append(line)}
 header.append(nav,brand,contacts(),toggle);
 const main=el('main');main.id='main';main.tabIndex=-1;
-const footer=el('footer');footer.append(el('span','',`© ${new Date().getFullYear()} ${site.name}`),link('Back to top ↑','#top'));footer.querySelector('a')!.onclick=e=>{e.preventDefault();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})};
+const footer=el('footer');footer.append(el('span','',`© ${new Date().getFullYear()} ${site.name}`));
 const dialog=el('div','mobile-menu');dialog.id='mobile-menu';dialog.inert=true;
 const mobileNav=el('nav');mobileNav.setAttribute('aria-label','Mobile navigation');mobileNav.append(link('My work','#/'),link('Contact','#/contact'));dialog.append(mobileNav,contacts());
 if(site.email){const gmail=link('Write using Gmail ↗',`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(site.email)}`,'gmail-link');gmail.target='_blank';gmail.rel='noopener noreferrer';dialog.append(gmail)}
 header.append(dialog);
-const toTop=el('button','scroll-top','↑');
-toTop.type='button';toTop.setAttribute('aria-label','Scroll to top');toTop.tabIndex=-1;toTop.setAttribute('aria-hidden','true');
-toTop.onclick=()=>{window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});main.focus({preventScroll:true})};
-app.append(skip,header,main,footer,toTop);
-const topObserver=new IntersectionObserver(([entry])=>{
- const visible=!!entry&&!entry.isIntersecting;
- toTop.classList.toggle('is-visible',visible);toTop.tabIndex=visible?0:-1;toTop.setAttribute('aria-hidden',String(!visible));
-},{rootMargin:'200px 0px 0px 0px'});
-topObserver.observe(header);
+app.append(skip,header,main,footer);
 let menuOpen=false;
 function closeMenu(restoreFocus=true){
  if(!menuOpen)return;
@@ -80,16 +72,46 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',event=>{
 matchMedia('(min-width: 768px)').addEventListener('change',e=>{if(e.matches)closeMenu(false)});
 function card(p:Project,i=2){const a=link('',`#/project/${p.slug}`,'project-card');a.append(image(p.cover,i<2));a.style.setProperty('--position',p.coverPosition||'center');const label=el('span','card-label');label.append(el('span','card-title',p.artist||p.title),el('span','card-subtitle',p.category?`${p.title} - ${p.category}`:p.title),el('span','card-meta',p.year||''));a.append(label);a.setAttribute('aria-label',[p.artist,p.title,p.category,p.year].filter(Boolean).join(' — '));return a}
 function grid(list:Project[]){const box=el('div','work-grid');list.forEach((p,i)=>box.append(card(p,i)));return box}
+let disposeCarousel=()=>{};
+function recommendationsCarousel(list:Project[]) {
+ const section=el('section','related');
+ section.setAttribute('aria-label','Recommended projects');
+ section.setAttribute('aria-roledescription','carousel');
+ const heading=el('div','related-heading');heading.append(el('h2','','You may also like'));
+ const track=el('div','recommendation-track');
+ list.forEach(p=>track.append(card(p)));
+ // A second copy makes the wrap visually seamless; only originals appear in keyboard navigation.
+ list.forEach(p=>{const copy=card(p);copy.tabIndex=-1;copy.setAttribute('aria-hidden','true');track.append(copy)});
+ section.append(heading,track);
+ const motion=matchMedia('(prefers-reduced-motion: reduce)');
+ let frame=0;
+ let lastTime=0;
+ let offset=0;
+ function tick(time:number) {
+  if(lastTime&&!document.hidden&&!motion.matches&&!section.contains(document.activeElement)) {
+   const first=track.children[0] as HTMLElement;
+   const duplicate=track.children[list.length] as HTMLElement;
+   const cycle=duplicate.offsetLeft-first.offsetLeft;
+   if(cycle>0){offset=(offset+Math.min(time-lastTime,50)*.028)%cycle;track.scrollLeft=offset;}
+  }
+  lastTime=time;
+  frame=requestAnimationFrame(tick);
+ }
+ frame=requestAnimationFrame(tick);
+ disposeCarousel=()=>cancelAnimationFrame(frame);
+ return section;
+}
 let previous='';let homeY=0;
 history.scrollRestoration='manual';
 function render(){
+ disposeCarousel();
  if(previous==='#/')homeY=scrollY;
  main.querySelectorAll('video').forEach(video=>{video.pause();video.removeAttribute('src');video.load()});
  closeMenu();const route=location.hash||'#/';app.classList.toggle('contact-page',route==='#/contact');main.replaceChildren();let title='My work';
  header.querySelectorAll('nav a').forEach(a=>{if(a.getAttribute('href')===(route==='#/contact'?'#/contact':'#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  if(route==='#/') {const heading=el('h1','sr-only','Photography and video');main.append(heading,grid(available));if(!available.length)main.append(el('p','empty','New work will be shared here soon.'));if(available.some(p=>p.demo))main.append(el('p','demo-note','Demo visual studies · Original photography and films coming soon.'))}
  else if(route==='#/contact'){title='Contact';const section=el('section','contact');section.append(el('h1','','Contact'));if(site.bio)section.append(el('p','',site.bio));section.append(contacts(true));if(!site.email&&!site.instagram&&!site.linkedin)section.append(el('p','','Contact details will be added soon.'));main.append(section)}
- else {const p=available.find(p=>route===`#/project/${p.slug}`);if(p){title=p.title;const intro=el('div','project-intro');intro.append(el('h1','',p.artist||p.title));if(p.category)intro.append(el('p','project-subtitle',`${p.title} - ${p.category}`));if(p.year)intro.append(el('p','eyebrow',p.year));const youtube=link('Watch on YouTube ↗',p.youtubeUrl||`https://www.youtube.com/results?search_query=${encodeURIComponent([p.artist,p.title,'official music video'].filter(Boolean).join(' '))}`,'youtube-link');youtube.target='_blank';youtube.rel='noopener noreferrer';if(!p.youtubeUrl)youtube.title=`Search YouTube for ${p.artist||''} ${p.title}`;intro.append(youtube);if(p.demo)intro.append(el('p','eyebrow','Demo visual study'));const gallery=el('section','gallery');gallery.setAttribute('aria-label',`${p.title} gallery`);p.blocks.forEach(b=>gallery.append(media(b)));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=related.length?related:available.filter(q=>q.id!==p.id).slice(0,2);if(recommendations.length){const section=el('section','related');section.append(el('h2','','You may also like'),grid(recommendations));main.append(section)}main.append(link('← Back to work','#/','back-link'))}else{title='Page not found';const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
+ else {const p=available.find(p=>route===`#/project/${p.slug}`);if(p){title=p.title;const intro=el('div','project-intro');intro.append(el('h1','',p.artist||p.title));if(p.category)intro.append(el('p','project-subtitle',`${p.title} - ${p.category}`));if(p.year)intro.append(el('p','eyebrow',p.year));const youtube=link('Watch on YouTube ↗',p.youtubeUrl||`https://www.youtube.com/results?search_query=${encodeURIComponent([p.artist,p.title,'official music video'].filter(Boolean).join(' '))}`,'youtube-link');youtube.target='_blank';youtube.rel='noopener noreferrer';if(!p.youtubeUrl)youtube.title=`Search YouTube for ${p.artist||''} ${p.title}`;intro.append(youtube);if(p.demo)intro.append(el('p','eyebrow','Demo visual study'));const gallery=el('section','gallery');gallery.setAttribute('aria-label',`${p.title} gallery`);p.blocks.filter(b=>b.type==='video').forEach(b=>gallery.append(media(b)));gallery.append(image(p.cover,true,'(max-width: 767px) 100vw, min(92vw, 1400px)'));p.blocks.filter(b=>b.type!=='video').forEach(b=>gallery.append(media(b)));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{title='Page not found';const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
  document.title=`${title} — ${site.name}`;if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }
 window.addEventListener('hashchange',render);render();
