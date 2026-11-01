@@ -42,8 +42,7 @@ export const projects:Project[] = entries.map(entry=>{
     })));
   }
   if(slug==='ftera'){
-    blocks.push({type:'image',image:photo(slug,'still-1','Lynux — Ftera — still 1',1106,1383)},
-      {type:'row',images:[photo(slug,'still-2','Lynux — Ftera — still 2',1080,1350),
+    blocks.push({type:'row',images:[photo(slug,'still-1','Lynux — Ftera — still 1',1106,1383),photo(slug,'still-2','Lynux — Ftera — still 2',1080,1350),
       photo(slug,'still-3','Lynux — Ftera — still 3',1080,1920)]});
   }
   if(slug==='gia-panta'){
@@ -73,5 +72,9 @@ const extraShishaPhotos=[
   photo('shisha-nomads','giozis-2','The Shisha Nomads — Giozis photograph 2',1333,2000),
 ];
 extraShishaPhotos.forEach(image=>shishaBlocks.push({type:'image',image}));
+const stories=['bounty','africa','bounty-2','cactus','limeginger','peach','watermellon'];
+stories.forEach(name=>shishaBlocks.push({type:'image',image:photo('shisha-nomads',`story-${name}`,
+  `The Shisha Nomads — ${name.replace('-2','')} story`,name==='cactus'?1067:900,1600)}));
+shishaBlocks.push({type:'image',image:photo('shisha-nomads','menu','The Shisha Nomads menu and price list',1754,2480)});
 projects.push({id:'shisha-nomads',slug:'shisha-nomads',title:'The Shisha Nomads',year:'2025',
   category:'Product Photography',cover:shishaCover,blocks:shishaBlocks,published:true});

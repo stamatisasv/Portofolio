@@ -116,8 +116,38 @@ test('home includes an automatically scrolling project carousel below the grid',
   assert.equal(c.doc.querySelector('.youtube-link'),null);
   assert.equal(c.doc.querySelector('.project-subtitle').textContent,'Product Photography');
   assert.ok(c.doc.querySelector('.product-gallery'));
-  assert.deepEqual([...c.doc.querySelectorAll('.gallery video')].map(v=>v.getAttribute('src').split('/').pop()),['video-1.mp4','video-3.mp4']);
+  assert.deepEqual([...c.doc.querySelectorAll('.gallery video')].map(v=>v.dataset.source.split('/').pop()),['video-1.mp4','video-3.mp4']);
   assert.equal(c.doc.querySelectorAll('.gallery video').length,2);
-  assert.equal(c.doc.querySelectorAll('.gallery > img, .gallery .image-row img').length,12);
+  assert.ok([...c.doc.querySelectorAll('.gallery video')].every(v=>v.preload==='none'&&!v.hasAttribute('src')));
+  assert.equal(c.doc.querySelectorAll('.gallery img[src*="story-"]').length,7);
+  assert.equal(c.doc.querySelector('.gallery img[src$="logo.png"]'),null);
+  assert.ok(c.doc.querySelector('.gallery img[src$="menu.jpg"]'));
+  assert.equal(c.doc.querySelectorAll('.gallery > img, .gallery .image-row img').length,20);
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('videos start muted and only one video can be unmuted on a page',async()=>{
+ const c=await setup('#/project/shisha-nomads');
+ try{
+  const pair=c.doc.querySelector('.video-pair');
+  const videos=[...pair.querySelectorAll('video')];
+  const buttons=[...pair.querySelectorAll('.video-mute')];
+  assert.equal(videos.length,2);
+  assert.equal(buttons.length,2);
+  assert.ok(videos.every(v=>v.muted&&!v.controls));
+  assert.ok(buttons.every(b=>b.textContent==='Unmute'));
+  buttons[0].click();await c.settle();
+  assert.equal(videos[0].muted,false);assert.equal(videos[1].muted,true);
+  assert.equal(buttons[0].textContent,'Mute');
+  buttons[1].click();await c.settle();
+  assert.equal(videos[0].muted,true);assert.equal(videos[1].muted,false);
+  assert.equal(buttons[0].textContent,'Unmute');assert.equal(buttons[1].textContent,'Mute');
+  buttons[1].click();await c.settle();
+  assert.ok(videos.every(v=>v.muted));
+  c.doc.querySelector('main').click();await c.settle();
+  assert.ok(videos.every(v=>v.muted));
+  buttons[0].click();await c.settle();
+  c.window.location.hash='#/project/euro-zese';await c.settle();
+  assert.ok([...c.doc.querySelectorAll('.gallery video')].every(v=>v.muted));
  }finally{await c.window.happyDOM.close()}
 });
