@@ -66,5 +66,12 @@ const shishaBlocks:MediaBlock[]=[1,3].map(n=>({
 }));
 for(let i=2;i<=8;i++)shishaBlocks.push({type:'image',image:
   photo('shisha-nomads',`flavour-${i}`,`The Shisha Nomads — flavour photograph ${i}`,2667,4000)});
+const extraShishaPhotos=[
+  photo('shisha-nomads','product-1','The Shisha Nomads — product photograph 1',1600,2000),
+  photo('shisha-nomads','product-3','The Shisha Nomads — product photograph 3',1500,2000),
+  photo('shisha-nomads','giozis-1','The Shisha Nomads — Giozis photograph 1',1333,2000),
+  photo('shisha-nomads','giozis-2','The Shisha Nomads — Giozis photograph 2',1333,2000),
+];
+extraShishaPhotos.forEach(image=>shishaBlocks.push({type:'image',image}));
 projects.push({id:'shisha-nomads',slug:'shisha-nomads',title:'The Shisha Nomads',year:'2025',
   category:'Product Photography',cover:shishaCover,blocks:shishaBlocks,published:true});

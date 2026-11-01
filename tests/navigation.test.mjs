@@ -118,6 +118,6 @@ test('home includes an automatically scrolling project carousel below the grid',
   assert.ok(c.doc.querySelector('.product-gallery'));
   assert.deepEqual([...c.doc.querySelectorAll('.gallery video')].map(v=>v.getAttribute('src').split('/').pop()),['video-1.mp4','video-3.mp4']);
   assert.equal(c.doc.querySelectorAll('.gallery video').length,2);
-  assert.equal(c.doc.querySelectorAll('.gallery > img, .gallery .image-row img').length,8);
+  assert.equal(c.doc.querySelectorAll('.gallery > img, .gallery .image-row img').length,12);
  }finally{await c.window.happyDOM.close()}
 });
