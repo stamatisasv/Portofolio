@@ -74,9 +74,9 @@ test('email links remain native and menu stays enabled during mail app handoff',
   c.menu.querySelector('a[href^="mailto:"]').click();
   await c.settle();
   assert.equal(c.menu.inert,false,'External app launch must not disable the menu');
-  for(const root of [c.menu,c.doc.querySelector('main')]){
-   const gmail=root.querySelector('.gmail-link');
-   assert.equal(new URL(gmail.href).searchParams.get('to'),'asvestasstamatis@gmail.com');
-  }
+  const gmail=c.menu.querySelector('.gmail-link');
+  assert.equal(new URL(gmail.href).searchParams.get('to'),'asvestasstamatis@gmail.com');
+  assert.equal(c.doc.querySelector('main .gmail-link'),null);
+  assert.equal(c.doc.querySelector('#app').classList.contains('contact-page'),true);
  }finally{await c.window.happyDOM.close()}
 });

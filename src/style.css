@@ -80,4 +80,11 @@ footer { padding-bottom: 90px; }
 }
 
 .gmail-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
-.contact .social-links > .gmail-link { justify-content: flex-start; }
+
+/* Keep the contact copyright at the bottom of the viewport or content. */
+#app.contact-page { min-height: 100svh; min-height: 100dvh; display: flex; flex-direction: column; }
+.contact-page > .header { flex-shrink: 0; }
+.contact-page > main { flex: 1; }
+.contact-page > footer { justify-content: flex-start; }
+.contact-page > footer a, .contact-page > .scroll-top { display: none; }
+.contact-page .mobile-menu > .gmail-link { display: none; }

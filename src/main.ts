@@ -27,10 +27,6 @@ function contacts(showDetails=false){
   }
   box.append(a);
  }
- if(site.email&&showDetails){
-  const gmail=link('Write using Gmail ↗',`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(site.email)}`,'gmail-link');
-  gmail.target='_blank';gmail.rel='noopener noreferrer';box.append(gmail);
- }
  return box;
 }
 const skip=link('Skip to content','#main','skip');skip.onclick=e=>{e.preventDefault();main.focus()};
@@ -87,7 +83,7 @@ let previous='';let homeY=0;
 history.scrollRestoration='manual';
 function render(){
  if(previous==='#/')homeY=scrollY;
- closeMenu();const route=location.hash||'#/';main.replaceChildren();let title='My work';
+ closeMenu();const route=location.hash||'#/';app.classList.toggle('contact-page',route==='#/contact');main.replaceChildren();let title='My work';
  header.querySelectorAll('nav a').forEach(a=>{if(a.getAttribute('href')===(route==='#/contact'?'#/contact':'#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  if(route==='#/') {const heading=el('h1','sr-only','Photography and video');main.append(heading,grid(available));if(!available.length)main.append(el('p','empty','New work will be shared here soon.'));if(available.some(p=>p.demo))main.append(el('p','demo-note','Demo visual studies · Original photography and films coming soon.'))}
  else if(route==='#/contact'){title='Contact';const section=el('section','contact');section.append(el('h1','','Contact'));if(site.bio)section.append(el('p','',site.bio));section.append(contacts(true));if(!site.email&&!site.instagram&&!site.linkedin)section.append(el('p','','Contact details will be added soon.'));main.append(section)}
