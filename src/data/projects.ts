@@ -5,6 +5,8 @@ const photo = (slug:string, name:string, alt:string, width=1600, height=900):Pho
 });
 const polaroidSizes = [[805,1006],[1000,724],[1000,913],[1000,1046]] as const;
 const polaroid = (i:number) => photo('ase-me-mono',`polaroid-${i}`,`Ase Me Mono — polaroid ${i}`,polaroidSizes[i-1]![0],polaroidSizes[i-1]![1]);
+// Add direct YouTube watch URLs here as they become available, keyed by project slug.
+const youtubeUrls:Record<string,string> = {};
 const entries = [
   {slug:'ase-me-mono',artist:'Karnalh',title:'Ase Me Mono',year:'2024',hasMedia:true},
   {slug:'gia-panta',artist:'Karnalh',title:'Gia Panta',year:'2024',hasMedia:true},
@@ -26,6 +28,6 @@ export const projects:Project[] = entries.map(entry=>{
     blocks.push({type:'row',images:[1,2].map(polaroid)},
       {type:'row',images:[3,4].map(polaroid)});
   }
-  return {id:slug,slug,artist,title,year,category:'Music Video Clip',cover,blocks,published:true,
+  return {id:slug,slug,artist,title,year,youtubeUrl:youtubeUrls[slug],category:'Music Video Clip',cover,blocks,published:true,
     relatedIds:entries.filter(p=>p.slug!==slug&&p.artist===artist).map(p=>p.slug)};
 });
