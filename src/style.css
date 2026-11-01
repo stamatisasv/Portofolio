@@ -107,3 +107,17 @@ footer { padding-bottom: 90px; }
   .project-card:hover > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
 }
 .project-card:focus-visible > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
+
+/* White mouse dot with a velocity-sensitive, diffused halo. */
+.glow-cursor { --glow: 0; position: fixed; top: 0; left: 0; width: 0; height: 0; pointer-events: none; z-index: 10000; opacity: 0; }
+.glow-cursor.is-visible { opacity: 1; }
+.glow-cursor::before, .glow-cursor::after { content: ''; position: absolute; border-radius: 50%; transform: translate(-50%, -50%); background: white; }
+.glow-cursor::before { width: calc(22px + var(--glow) * 38px); height: calc(22px + var(--glow) * 38px); filter: blur(calc(8px + var(--glow) * 9px)); opacity: calc(.25 + var(--glow) * .65); }
+.glow-cursor::after { width: 7px; height: 7px; filter: blur(.6px); box-shadow: 0 0 6px #fff9; }
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor, html.custom-cursor * { cursor: none !important; }
+}
+@media (forced-colors: active) {
+  .glow-cursor { display: none; }
+  html.custom-cursor, html.custom-cursor * { cursor: auto !important; }
+}

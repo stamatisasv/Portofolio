@@ -1,3 +1,4 @@
+import {initCursor} from './components/cursor';
 import './style.css';
 import {site} from './data/site';
 import {projects} from './data/projects';
@@ -91,3 +92,5 @@ function render(){
  document.title=`${title} — ${site.name}`;if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }
 window.addEventListener('hashchange',render);render();
+
+initCursor();
