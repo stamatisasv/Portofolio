@@ -1,3 +1,4 @@
+import {honeyPhotos} from './honey';
 import {healinPhotos} from './healin';
 import {skincarePhotos} from './skincare';
 import type { Photo, Project, MediaBlock } from '../types';
@@ -39,7 +40,7 @@ export const projects:Project[] = entries.map(entry=>{
   }]:slug==='mona-lisa'?[]:[{type:'caption',text:'Project media coming soon.'}];
   if(slug==='euro-zese'){
     blocks.splice(0,blocks.length,...Array.from({length:8},(_,i):MediaBlock=>({
-      type:'video',provider:'file',source:`media/projects/${slug}/vfx-${i+1}.mp4`,
+      type:'video',provider:'file',source:`media/projects/${slug}/web-1080p/vfx-${i+1}.mp4`,
       poster:cover,title:`Zese — Euro — ${i===7?'Smoke text':`VFX ${i+1}`}`,aspectRatio:'16 / 9',
     })));
   }
@@ -118,7 +119,7 @@ projects.push({id:'drakolimni',slug:'drakolimni',title:'Tymfi',year:'2024',
 const dolomitesCover=photo('dolomites','cover','Dolomites — opening frame of film 1',1920,1080);
 const dolomitesVideoNames=['1','1_01517917','2','3','4','5','6','7','8','9','10','11','13'];
 const dolomitesBlocks:MediaBlock[]=dolomitesVideoNames.map((name,i)=>({
-  type:'video',provider:'file',source:`media/projects/dolomites/video-${name==='7'?'7-web':name}.mp4`,
+  type:'video',provider:'file',source:`media/projects/dolomites/web-1080p/video-${name}.mp4`,
   poster:dolomitesCover,title:`Dolomites — film ${i+1}`,aspectRatio:'16 / 9',
 }));
 [1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21].forEach(n=>dolomitesBlocks.push({type:'image',image:
@@ -189,9 +190,44 @@ projects.push({id:'wedding-in-lemnos',slug:'wedding-in-lemnos',title:'Wedding in
     {type:'row',images:[4,5].map(n=>photo('wedding-in-lemnos',`still-${n}`,`Wedding in Lemnos — film still ${n}`,1800,1013))},
   ]});
 
+const athensCover=photo('athens','cover','Athens — Acropolis aerial view',607,1080);
+const athensFilms=[['akropolisnew1','Acropolis'],['DJI_0164','City aerial study'],
+  ['pireausdust','Piraeus in the haze'],['towerofpireaus','Piraeus Tower'],
+  ['anogfpvreel','FPV drone reel','16 / 9'],['karabi-sporrts','FPV boat and watersports','16 / 9']];
+projects.push({id:'athens',slug:'athens',title:'Aerial Production',year:'2025',cover:athensCover,published:true,
+  blocks:athensFilms.map(([name,title,ratio])=>({type:'video',provider:'file',source:`media/projects/athens/${['anogfpvreel','karabi-sporrts'].includes(name!)?'web-1080p/':''}${name}.mp4`,
+    poster:athensCover,title:`Aerial Production — ${title}`,aspectRatio:ratio||'9 / 16',rotation:name==='anogfpvreel'?-90:undefined}))});
+
+const kompiCover=photo('kompi','cover','Kompi — golden-hour landscape and travel collage',1013,1800);
+const kompiBlocks:MediaBlock[]=[{type:'video',provider:'file',source:'media/projects/kompi/film.mp4',
+  poster:kompiCover,title:'Kompi — travel film',aspectRatio:'9 / 16'}];
+for(let n=138;n<=145;n++)kompiBlocks.push({type:'image',image:{
+  ...photo('kompi',`still-${n}`,`Kompi — film still ${n}`,1013,1800),rotation:n<=141?-90:undefined}});
+projects.push({id:'kompi',slug:'kompi',title:'Kompi',year:'2023',cover:kompiCover,blocks:kompiBlocks,published:true});
+
+const honeyCover={...honeyPhotos.find(image=>image.src.endsWith('photo-24-1200.webp'))!,
+  src:'media/projects/lemnian-honey/cover.webp',alt:'Lemnian Honey — honey jars among flowering thyme'};
+const honeyBlocks:MediaBlock[]=Array.from({length:4},(_,i)=>({type:'video',provider:'file',
+  source:`media/projects/lemnian-honey/video-${i+1}.mp4`,poster:honeyCover,
+  title:`Lemnian Honey — product film ${i+1}`,aspectRatio:'9 / 16'}));
+honeyPhotos.forEach(image=>honeyBlocks.push({type:'image',image}));
+honeyBlocks.push({type:'row',images:[1,2].map(n=>({src:`media/projects/lemnian-honey/brochure-${n}.webp`,
+  alt:`Lemnian Honey — Bontelas brochure, page ${n}`,width:1600,height:1131}))});
+projects.push({id:'lemnian-honey',slug:'lemnian-honey',title:'Lemnian Honey',year:'2026',category:'Product Photography & Video',
+  cover:honeyCover,coverPosition:'center 58%',blocks:honeyBlocks,published:true});
+
 // Stable sorting preserves the curated order for projects from the same year.
 projects.sort((a,b)=>Number(b.year||0)-Number(a.year||0));
 
 const healinIndex=projects.findIndex(project=>project.id==='healin-physio');
 const [healinProject]=projects.splice(healinIndex,1);
 projects.splice(projects.findIndex(project=>project.id==='longpress'),0,healinProject!);
+
+function moveProjectAfter(id:string,afterId:string){
+  const index=projects.findIndex(project=>project.id===id);
+  const [project]=projects.splice(index,1);
+  projects.splice(projects.findIndex(item=>item.id===afterId)+1,0,project!);
+}
+moveProjectAfter('athens','shisha-nomads');
+moveProjectAfter('cypher','athens');
+moveProjectAfter('dolomites','euro-zese');

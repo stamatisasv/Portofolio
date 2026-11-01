@@ -85,7 +85,7 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,17);
+  assert.equal(routes.length,20);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
@@ -93,7 +93,7 @@ test('every project page includes a recommendations carousel after its gallery',
    assert.ok(gallery,route);
    if(!['#/project/skin-care-lab','#/project/reborn'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
-    assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.jpg$|pending\.svg$/,route);
+    assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$/,route);
    }else{
     assert.equal(gallery.querySelector(':scope > img'),null);
     assert.ok([...gallery.querySelectorAll('.postcard-grid img')].every(img=>!/giveaway/i.test(img.alt)));
@@ -115,7 +115,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,17);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,20);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -142,13 +142,13 @@ test('videos start muted and only one video can be unmuted on a page',async()=>{
   assert.equal(videos.length,2);
   assert.equal(buttons.length,2);
   assert.ok(videos.every(v=>v.muted&&!v.controls));
-  assert.ok(buttons.every(b=>b.textContent==='Unmute'));
+  assert.ok(buttons.every(b=>b.title==='Unmute'));
   buttons[0].click();await c.settle();
   assert.equal(videos[0].muted,false);assert.equal(videos[1].muted,true);
-  assert.equal(buttons[0].textContent,'Mute');
+  assert.equal(buttons[0].title,'Mute');
   buttons[1].click();await c.settle();
   assert.equal(videos[0].muted,true);assert.equal(videos[1].muted,false);
-  assert.equal(buttons[0].textContent,'Unmute');assert.equal(buttons[1].textContent,'Mute');
+  assert.equal(buttons[0].title,'Unmute');assert.equal(buttons[1].title,'Mute');
   buttons[1].click();await c.settle();
   assert.ok(videos.every(v=>v.muted));
   c.doc.querySelector('main').click();await c.settle();
@@ -257,9 +257,9 @@ test('home projects and carousel are ordered newest year first',async()=>{
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
    const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].map(el=>Number(el.textContent));
-   assert.equal(years.length,17);
+   assert.equal(years.length,20);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
-   assert.equal(years[0],2026);assert.equal(years.at(-1),2024);
+   assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
   }
  }finally{await c.window.happyDOM.close()}
 });
@@ -425,5 +425,104 @@ test('Wedding editorial grid includes twenty-six new stills and preserves title 
   assert.ok(gallery.firstElementChild.classList.contains('video'));
   assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.jpg$/);
   for(const img of stills)await readFile(new URL(`../public/${new URL(img.src).pathname.replace('/Portofolio/','')}`,import.meta.url));
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Aerial Production 2025 combines Athens and FPV films',async()=>{
+ const c=await setup('#/project/athens');
+ try{
+  assert.equal(c.doc.querySelector('main h1').textContent,'Aerial Production');
+  assert.equal(c.doc.querySelector('.project-intro .eyebrow').textContent,'2025');
+  const gallery=c.doc.querySelector('.gallery');
+  assert.equal(gallery.querySelectorAll('.reborn-video-grid video').length,6);
+  assert.equal(gallery.querySelector('.rotated-video').style.getPropertyValue('--video-rotation'),'-90deg');
+  assert.equal([...gallery.querySelectorAll('.video')].filter(v=>v.style.aspectRatio==='9 / 16').length,4);
+  assert.equal([...gallery.querySelectorAll('.video')].filter(v=>v.style.aspectRatio==='16 / 9').length,2);
+  assert.match(gallery.lastElementChild.getAttribute('src'),/athens\/cover\.jpg$/);
+  for(const el of gallery.querySelectorAll('img,video')){
+   const url=el.dataset.source||el.src;
+   await readFile(new URL(`../public/${new URL(url,'https://example.com').pathname.replace('/Portofolio/','')}`,import.meta.url));
+  }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('requested 2025 project ordering is preserved',async()=>{
+ const c=await setup();
+ try{
+  const routes=[...c.doc.querySelectorAll('main .work-grid > a')].map(a=>a.getAttribute('href'));
+  for(const [before,after] of [['shisha-nomads','athens'],['athens','cypher'],['euro-zese','dolomites']]){
+   assert.equal(routes[routes.indexOf(`#/project/${before}`)+1],`#/project/${after}`);
+  }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Kompi 2023 includes its film, eight stills, and four landscape rotations',async()=>{
+ const c=await setup('#/project/kompi');
+ try{
+  assert.equal(c.doc.querySelector('main h1').textContent,'Kompi');
+  assert.equal(c.doc.querySelector('.project-intro .eyebrow').textContent,'2023');
+  const gallery=c.doc.querySelector('.gallery');
+  assert.equal(gallery.querySelectorAll('video').length,1);
+  assert.equal(gallery.querySelectorAll('.kompi-photo-grid img').length,8);
+  const rotations=[...gallery.querySelectorAll('.rotated-still')];
+  assert.equal(rotations.length,4);
+  assert.ok(rotations.every(frame=>Number(frame.style.aspectRatio.split('/')[0])>Number(frame.style.aspectRatio.split('/')[1])));
+  assert.ok(rotations.every(frame=>frame.querySelector('img').style.transform.includes('-90deg')));
+  assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.jpg$/);
+  for(const el of gallery.querySelectorAll('img,video')){
+   const url=el.dataset.source||el.src;
+   await readFile(new URL(`../public/${new URL(url,'https://example.com').pathname.replace('/Portofolio/','')}`,import.meta.url));
+  }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Lemnian Honey serves responsive WebP photos, four films, and two brochure pages',async()=>{
+ const c=await setup('#/project/lemnian-honey');
+ try{
+  const gallery=c.doc.querySelector('.gallery');
+  assert.equal(c.doc.querySelector('main h1').textContent,'Lemnian Honey');
+  const photos=[...gallery.querySelectorAll('.honey-photo-grid > img')];
+  assert.equal(photos.length,22);
+  assert.ok(photos.every(img=>img.src.endsWith('.webp')&&img.srcset.includes('640w')&&img.loading==='lazy'));
+  assert.equal(gallery.querySelectorAll('video').length,4);
+  assert.equal(gallery.querySelectorAll('.image-row img').length,2);
+  assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.webp$/);
+  for(const el of gallery.querySelectorAll('img,video')){
+   const url=el.dataset.source||el.src;
+   await readFile(new URL(`../public/${new URL(url,'https://example.com').pathname.replace('/Portofolio/','')}`,import.meta.url));
+  }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Lemnian Honey is the last project dated 2026',async()=>{
+ const c=await setup();
+ try{
+  const cards=[...c.doc.querySelectorAll('main .work-grid > .project-card')];
+  const group=cards.filter(card=>card.querySelector('.card-meta').textContent==='2026');
+  assert.equal(group.at(-1).getAttribute('href'),'#/project/lemnian-honey');
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('volume slider adjusts and preserves volume while switching the active video',async()=>{
+ const c=await setup('#/project/shisha-nomads');
+ try{
+  const wrappers=[...c.doc.querySelectorAll('.video-pair .video')];
+  const first=wrappers[0].querySelector('video');
+  const controls=wrappers[0].querySelector('.video-audio');
+  const slider=controls.querySelector('input[type=range]');
+  assert.equal(slider.disabled,true);
+  controls.querySelector('button').click();await c.settle();
+  assert.equal(slider.disabled,false);assert.ok(controls.classList.contains('is-unmuted'));
+  slider.value='.35';slider.dispatchEvent(new c.window.Event('input'));await c.settle();
+  assert.equal(first.volume,.35);assert.equal(slider.getAttribute('aria-valuetext'),'35%');
+  wrappers[1].querySelector('button').click();await c.settle();
+  assert.equal(first.muted,true);assert.equal(slider.disabled,true);
+  controls.querySelector('button').click();await c.settle();
+  assert.equal(first.volume,.35);assert.equal(first.muted,false);
+  assert.equal(wrappers[1].querySelector('video').muted,true);
+  slider.value='0';slider.dispatchEvent(new c.window.Event('input'));await c.settle();
+  assert.equal(first.volume,0);assert.equal(slider.disabled,false);
+  slider.value='.5';slider.dispatchEvent(new c.window.Event('input'));await c.settle();
+  assert.equal(first.volume,.5);
  }finally{await c.window.happyDOM.close()}
 });

@@ -26,3 +26,7 @@ dist-ssr
 # Retained local originals; the site uses smaller -web exports.
 /public/media/projects/dolomites/video-7.mp4
 /public/media/projects/skin-care-lab/video-2.mp4
+
+# FPV originals retained locally; use 1080p web exports in the site.
+/public/media/projects/athens/anogfpvreel.mp4
+/public/media/projects/athens/karabi-sporrts.mp4
