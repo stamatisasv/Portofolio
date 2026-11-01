@@ -104,9 +104,9 @@ footer { padding-bottom: 90px; }
 .project-card { overflow: hidden; }
 .project-card > img { transition: filter 280ms ease, transform 280ms ease; }
 @media (hover: hover) and (pointer: fine) {
-  .project-card:hover > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
+  .project-card:hover > img { filter: brightness(.32); transform: scale(1.06); }
 }
-.project-card:focus-visible > img { filter: brightness(.32) blur(9px); transform: scale(1.06); }
+.project-card:focus-visible > img { filter: brightness(.32); transform: scale(1.06); }
 
 /* White mouse dot with a velocity-sensitive, diffused halo. */
 .glow-cursor { --glow: 0; position: fixed; top: 0; left: 0; width: 0; height: 0; pointer-events: none; z-index: 10000; opacity: 0; }
@@ -121,8 +121,8 @@ footer { padding-bottom: 90px; }
   .glow-cursor { display: none; }
   html.custom-cursor, html.custom-cursor * { cursor: auto !important; }
 }
-.youtube-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; padding: 8px 18px; border: 1px solid #ffffff40; font-size: 12px; letter-spacing: .04em; transition: background 180ms, border-color 180ms; }
-.youtube-link:hover, .youtube-link:focus-visible { background: #ffffff12; border-color: #ffffff90; }
+.youtube-link, .instagram-link, .website-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; padding: 8px 18px; border: 1px solid #ffffff40; font-size: 12px; letter-spacing: .04em; transition: background 180ms, border-color 180ms; }
+.youtube-link:hover, .youtube-link:focus-visible, .instagram-link:hover, .instagram-link:focus-visible, .website-link:hover, .website-link:focus-visible { background: #ffffff12; border-color: #ffffff90; }
 
 /* Project films play as passive media without clickable player controls. */
 .video > video { pointer-events: none; }
@@ -177,3 +177,92 @@ footer { padding-bottom: 90px; }
 @media (max-width: 600px) { .ftera-gallery > .image-row { gap: 5px; } }
 .product-gallery > .caption { grid-column: 1 / -1; margin: 24px 0 4px; }
 .product-gallery > img[src$="/logo.png"] { grid-column: 1 / -1; width: min(240px, 65%); justify-self: center; margin-bottom: 20px; }
+
+/* Close-set editorial contact sheets: hero pairs, square details, wide frames. */
+.editorial-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(5px, .7vw, 10px); align-items: stretch; margin: clamp(16px, 2vw, 28px) 0; }
+.editorial-grid > img { min-width: 0; width: 100%; height: 100%; object-fit: cover; grid-column: span 4; aspect-ratio: 1; }
+.editorial-grid > img:nth-child(6n + 1) { grid-column: span 8; aspect-ratio: 16 / 9; }
+.editorial-grid > img:nth-child(6n + 2) { grid-column: span 4; aspect-ratio: 8 / 9; }
+.editorial-grid > img:nth-child(6n) { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+.editorial-grid > img:last-child:nth-child(6n + 1) { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+@media (max-width: 767px) {
+ .editorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+ .editorial-grid > img:nth-child(n) { grid-column: span 1; aspect-ratio: 4 / 3; }
+ .editorial-grid > img:nth-child(6n), .editorial-grid > img:last-child:nth-child(odd) { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+}
+
+/* Cypher keeps every still's original frame in a varied-size contact sheet. */
+.uncropped-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(5px, .7vw, 10px); align-items: center; margin: clamp(16px, 2vw, 28px) 0; }
+.uncropped-grid > img { grid-column: span 3; min-width: 0; width: 100%; height: auto; object-fit: contain; }
+.uncropped-grid > img:first-child { grid-column: 1 / -1; }
+.uncropped-grid > img:nth-child(n + 4):nth-child(-n + 6) { grid-column: span 2; }
+@media (max-width: 767px) {
+ .uncropped-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+ .uncropped-grid > img:nth-child(n) { grid-column: span 1; }
+ .uncropped-grid > img:first-child, .uncropped-grid > img:nth-child(6) { grid-column: 1 / -1; }
+}
+
+/* Euro's landscape VFX clips keep their full frames in a compact grid. */
+.euro-video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(5px, .7vw, 10px); margin-bottom: 20px; }
+.euro-video-grid > .video { min-width: 0; aspect-ratio: 16 / 9; }
+.euro-video-grid > .video > video { object-fit: contain; }
+@media (max-width: 600px) { .euro-video-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.drakolimni-video-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(5px, .7vw, 10px); margin-bottom: 20px; }
+.drakolimni-video-grid > .video { min-width: 0; }
+@media (max-width: 767px) { .drakolimni-video-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Preserve the original postcard borders, typography, and orientation. */
+.postcard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 1.2vw, 18px); align-items: start; margin: 24px 0; }
+.postcard-grid > img { min-width: 0; width: 100%; height: auto; object-fit: contain; }
+@media (max-width: 1023px) { .postcard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .postcard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.lenses-video-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: min(100%, 1000px); align-self: center; margin-bottom: 20px; }
+.lenses-video-pair > .video { min-width: 0; }
+.lenses-photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.lenses-photo-grid > img { width: 100%; height: auto; }
+@media (max-width: 600px) { .lenses-video-pair { grid-template-columns: minmax(0, 1fr); max-width: 540px; } }
+
+/* Graphic design layouts retain complete typography and artwork. */
+.dumbos-gallery { gap: clamp(12px, 2vw, 28px); }
+.dumbos-gallery > img { max-width: 1100px; align-self: center; }
+.dumbos-gallery > .image-row { width: min(100%, 1000px); align-self: center; gap: clamp(8px, 1.5vw, 20px); }
+.dumbos-gallery > img:last-child { max-width: 800px; }
+
+/* Fit the complete Dumbos identity in wide cards and keep posters uncropped. */
+.dumbos-card { background: #faf5ec; }
+.dumbos-card > img { object-fit: contain; object-position: center; }
+.dumbos-gallery > .image-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; align-items: start; }
+.dumbos-gallery > .image-row img { height: auto; }
+@media (max-width: 767px) { .dumbos-gallery > .image-row { grid-template-columns: minmax(0, 1fr); width: min(100%, 540px); } }
+
+/* Darken the complete fitted artwork card, including its surrounding canvas. */
+.dumbos-card::after { content: ''; position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 280ms ease; }
+.dumbos-card .card-label { z-index: 1; }
+@media (hover: hover) and (pointer: fine) {
+ .dumbos-card:hover > img { filter: none; }
+ .dumbos-card:hover::after { opacity: .68; }
+}
+.dumbos-card:focus-visible > img { filter: none; }
+.dumbos-card:focus-visible::after { opacity: .68; }
+
+.skincare-video-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 20px; }
+.skincare-video-grid > .video { min-width: 0; }
+@media (max-width: 767px) { .skincare-video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; } }
+@media (max-width: 480px) { .skincare-video-grid { grid-template-columns: minmax(0, 1fr); } }
+.skincare-card { background: #fff; }
+
+.reborn-video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: min(100%, 1088px); align-self: center; margin-bottom: 20px; }
+.reborn-video-grid > .video { min-width: 0; }
+@media (max-width: 600px) { .reborn-video-grid { grid-template-columns: minmax(0, 1fr); max-width: 540px; } }
+
+.healin-video-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 20px; }
+.healin-video-grid > .video { min-width: 0; }
+.healin-video-grid > .video:first-child { grid-column: 1 / -1; }
+.healin-photo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 20px; align-items: start; }
+.healin-photo-grid > img { min-width: 0; width: 100%; height: auto; }
+@media (max-width: 767px) { .healin-video-grid, .healin-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; } }
+@media (max-width: 480px) { .healin-video-grid { grid-template-columns: minmax(0, 1fr); } }
+/* Keep wedding title cards and composed collages intact within the editorial grid. */
+.editorial-wedding-in-lemnos > img.complete-frame { object-fit: contain; background: #080808; }

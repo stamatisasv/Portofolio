@@ -1,3 +1,3 @@
 export interface Photo { src: string; alt: string; width: number; height: number; variants?: {src:string; width:number}[] }
 export type MediaBlock = {type:'image';image:Photo}|{type:'row';images:Photo[]}|{type:'caption';text:string}|{type:'video';provider:'youtube'|'vimeo'|'file';source:string;poster:Photo;title:string;aspectRatio:string};
-export interface Project {id:string;slug:string;title:string;artist?:string;youtubeUrl?:string;year?:string;category?:string;cover:Photo;coverPosition?:string;blocks:MediaBlock[];relatedIds?:string[];published:boolean;demo?:boolean}
+export interface Project {id:string;slug:string;title:string;artist?:string;youtubeUrl?:string;instagramUrl?:string;websiteUrl?:string;year?:string;category?:string;cover:Photo;coverPosition?:string;blocks:MediaBlock[];relatedIds?:string[];published:boolean;demo?:boolean}
