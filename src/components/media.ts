@@ -7,6 +7,15 @@ export function image(photo:Photo,eager=false,sizes='(max-width: 767px) 100vw, 4
  return img;
 }
 // Keep retries from an earlier autoplay attempt from muting a later user gesture.
+const visibleVideos=new Set<HTMLVideoElement>();
+const videoObserver=new IntersectionObserver(entries=>{
+ for(const entry of entries){
+  const video=entry.target as HTMLVideoElement;
+  if(entry.isIntersecting){visibleVideos.add(video);startVideo(video)}
+  else {visibleVideos.delete(video);playbackAttempts.set(video,(playbackAttempts.get(video)||0)+1);video.pause()}
+ }
+},{threshold:.3});
+export function resetVideoVisibility(){videoObserver.disconnect();visibleVideos.clear()}
 const playbackAttempts = new WeakMap<HTMLVideoElement, number>();
 function startVideo(video:HTMLVideoElement) {
  const attempt=(playbackAttempts.get(video)||0)+1;
@@ -23,7 +32,7 @@ function enableVideoSound(event:Event) {
  if(!event.isTrusted)return;
  if(event instanceof KeyboardEvent&&(event.repeat||['Shift','Control','Alt','Meta','Escape','Tab'].includes(event.key)))return;
  document.querySelectorAll<HTMLVideoElement>('.video > video').forEach(video=>{
-  if(video.muted||video.paused)startVideo(video);
+  if(visibleVideos.has(video)&&(video.muted||video.paused))startVideo(video);
  });
 }
 // Run play() synchronously inside a user gesture so browsers can allow audio.
@@ -39,11 +48,8 @@ export function media(block:MediaBlock):HTMLElement {
   const video=element('video');video.controls=false;video.playsInline=true;video.autoplay=true;
   video.preload='auto';video.volume=1;video.loop=true;video.poster=asset(block.poster.src);video.src=asset(block.source);
   video.setAttribute('aria-label',block.title);wrapper.append(video);
-  // Start after the gallery has been attached; retry muted if sound is blocked.
-  requestAnimationFrame(()=>{
-   if(!video.isConnected)return;
-   startVideo(video);
-  });
+  video.autoplay=false;
+  videoObserver.observe(video);
   return wrapper;
  }
  const play=element('button','video-play');play.type='button';play.append(image(block.poster),element('span','',`Play ${block.title} ↗`));

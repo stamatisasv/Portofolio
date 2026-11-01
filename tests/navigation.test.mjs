@@ -80,3 +80,44 @@ test('email links remain native and menu stays enabled during mail app handoff',
   assert.equal(c.doc.querySelector('#app').classList.contains('contact-page'),true);
  }finally{await c.window.happyDOM.close()}
 });
+
+test('every project page includes a recommendations carousel after its gallery',async()=>{
+ const c=await setup();
+ try{
+  const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
+  assert.equal(routes.length,9);
+  for(const route of routes){
+   c.window.location.hash=route;await c.settle();
+   const gallery=c.doc.querySelector('main .gallery');
+   const section=c.doc.querySelector('main .related');
+   assert.ok(gallery,route);
+   assert.equal(gallery.nextElementSibling,section,route);
+   assert.equal(section.getAttribute('aria-roledescription'),'carousel');
+   const cards=section.querySelectorAll('.recommendation-track > .project-card');
+   assert.equal(cards.length,(routes.length-1)*2);
+   assert.equal([...cards].filter(card=>!card.hasAttribute('aria-hidden')).length,routes.length-1);
+   assert.ok([...cards].every(card=>card.getAttribute('href')!==route));
+  }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('home includes an automatically scrolling project carousel below the grid',async()=>{
+ const c=await setup();
+ try{
+  const grid=c.doc.querySelector('main .work-grid');
+  const carousel=c.doc.querySelector('main .related');
+  assert.equal(grid.nextElementSibling,carousel);
+  assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,9);
+  assert.equal(carousel.querySelectorAll('button').length,0);
+  c.window.location.hash='#/project/shisha-nomads';await c.settle();
+  assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
+  assert.equal(c.doc.querySelector('.project-intro .eyebrow').textContent,'2025');
+  assert.equal(c.doc.querySelector('.youtube-link'),null);
+  assert.equal(c.doc.querySelector('.project-subtitle').textContent,'Product Photography');
+  assert.ok(c.doc.querySelector('.product-gallery'));
+  assert.deepEqual([...c.doc.querySelectorAll('.gallery video')].map(v=>v.getAttribute('src').split('/').pop()),['video-1.mp4','video-3.mp4']);
+  assert.equal(c.doc.querySelectorAll('.gallery video').length,2);
+  assert.equal(c.doc.querySelectorAll('.gallery > img, .gallery .image-row img').length,8);
+ }finally{await c.window.happyDOM.close()}
+});
