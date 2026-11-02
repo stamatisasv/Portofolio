@@ -218,8 +218,25 @@ function render(){
  editorial.append(media(videos[0]!),photoGroup(scenes.slice(0,3)),media(videos[1]!),
   photoGroup(scenes.slice(3,15)),media(videos[2]!),photoGroup(scenes.slice(15)),photoGroup(closing,true));
  gallery.append(editorial);
+}else if(p.id==='drivio'){
+ const editorial=el('div','drivio-editorial');
+ p.blocks.forEach(block=>{
+  if(block.type==='caption'){
+   const heading=el('h2','drivio-print-title',block.text);editorial.append(heading);return;
+  }
+  const frame=media(block);
+  if(block.type==='row')frame.classList.add('drivio-split');
+  if(block.type==='image'&&block.image.src.includes('/print-'))frame.classList.add('drivio-print');
+  editorial.append(frame);
+ });
+ gallery.append(editorial);
+}else if(p.id==='dali-drops'){
+ const opening=el('div','dali-opening-grid');
+ const photos=el('div','mixed-media-grid');
+ p.blocks.forEach((block,index)=>(index<6?opening:photos).append(media(block)));
+ gallery.append(opening,photos);
 }else if(p.galleryLayout==='mixed'){
- const mixed=el('div','mixed-media-sections');
+ const mixed=el('div',`mixed-media-sections${p.id==='fika'?' fika-editorial':''}`);
  let group:HTMLDivElement|undefined;
  let wideGroup=false;
  p.blocks.forEach(block=>{
@@ -234,7 +251,7 @@ function render(){
  const screenshots=el('div','editorial-grid healin-website-grid');
  healinWebsiteScreenshots.forEach(photo=>screenshots.append(image(photo,false,'(max-width: 767px) 100vw, (max-width: 1023px) 46vw, 700px')));
  website.append(screenshots);gallery.append(website);
-}if(!['skin-care-lab','reborn','athens','kaveira-3d'].includes(p.id))gallery.append(image(p.cover,false,'(max-width: 767px) 100vw, min(92vw, 1400px)'));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
+}if(!['skin-care-lab','reborn','athens','kaveira-3d','fika','drivio','dali-drops'].includes(p.id))gallery.append(image(p.cover,false,'(max-width: 767px) 100vw, min(92vw, 1400px)'));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
  refreshMobileCards();
  document.title='Asvestas Stamatis';if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }

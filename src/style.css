@@ -379,3 +379,25 @@ footer { padding-bottom: 90px; }
  .contact-portrait { width: 150px; justify-self: center; margin-bottom: 28px; }
  .contact-with-portrait > .social-links, .contact-with-portrait > p { grid-column: 1; }
 }
+
+/* Fika's portrait photographs and films flow together as a close editorial sheet. */
+.fika-editorial > .mixed-media-grid { columns: 3; column-gap: clamp(6px, 1vw, 14px); }
+.fika-editorial > .mixed-media-grid > img,
+.fika-editorial > .mixed-media-grid > .video { margin-bottom: clamp(6px, 1vw, 14px); }
+@media (max-width: 767px) { .fika-editorial > .mixed-media-grid { columns: 2; } }
+@media (max-width: 480px) { .fika-editorial > .mixed-media-grid { columns: 1; } }
+
+.drivio-editorial { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(6px, 1vw, 14px); align-items: start; }
+.drivio-editorial > img, .drivio-editorial > .video { width: 100%; min-width: 0; }
+.drivio-editorial > .drivio-split { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; }
+.drivio-split > div { min-width: 0; }
+.drivio-split img { width: 100%; height: auto; }
+.drivio-print-title { grid-column: 1 / -1; text-align: center; margin: 28px 0 12px; }
+.drivio-editorial > .drivio-print { grid-column: 1 / -1; width: min(100%, 1100px); justify-self: center; height: auto; }
+@media (max-width: 767px) { .drivio-editorial { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .drivio-editorial { grid-template-columns: minmax(0, 1fr); } }
+
+.dali-opening-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: start; }
+.dali-opening-grid > img, .dali-opening-grid > .video { width: 100%; min-width: 0; }
+@media (max-width: 767px) { .dali-opening-grid { gap: 5px; } }
+@media (max-width: 480px) { .dali-opening-grid { grid-template-columns: minmax(0, 1fr); } }

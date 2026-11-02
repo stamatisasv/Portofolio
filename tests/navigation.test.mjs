@@ -86,13 +86,13 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,26);
+  assert.equal(routes.length,29);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
    const section=c.doc.querySelector('main .related');
    assert.ok(gallery,route);
-   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d'].includes(route)){
+   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d','#/project/fika','#/project/drivio','#/project/dali-drops'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
     assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
@@ -116,7 +116,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,26);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,29);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -257,7 +257,7 @@ test('home projects and carousel are ordered newest year first',async()=>{
  const c=await setup();
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
-   const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].map(el=>Number(el.textContent));
+   const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].filter(el=>el.textContent.trim()).map(el=>Number(el.textContent));
    assert.equal(years.length,26);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
    assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
@@ -696,5 +696,28 @@ test('Kaveira opens from the first 2025 card with all thesis media',async()=>{
    const src=element.dataset.source||element.getAttribute('src');
    await access(new URL(`../public/${src.replace(/^.*?media\//,'media/')}`,import.meta.url));
   }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Drivio keeps the panorama halves together and includes its film and A5 design',async()=>{
+ const c=await setup('#/project/drivio',390);
+ try{
+  const gallery=c.doc.querySelector('.drivio-editorial');
+  const halves=[...gallery.querySelectorAll('.drivio-split img')];
+  assert.equal(halves.length,2);
+  assert.match(halves[0].src,/part-1-1600\.webp$/);
+  assert.match(halves[1].src,/part-2-1600\.webp$/);
+  assert.equal(gallery.firstElementChild,halves[0].closest('.drivio-split'));
+  assert.equal(gallery.querySelectorAll('img').length,9);
+  assert.equal(gallery.querySelectorAll('video').length,1);
+  assert.equal(gallery.querySelector('.drivio-print-title').textContent,'Print Design — A5');
+  assert.match(gallery.querySelector('.drivio-print').src,/print-1600\.webp$/);
+  for(const el of gallery.querySelectorAll('img,video')){
+   for(const src of [el.getAttribute('src'),el.getAttribute('poster'),el.dataset.source].filter(Boolean)){
+    await access(new URL('../public/'+src.replace('/Portofolio/',''),import.meta.url));
+   }
+  }
+  c.window.location.hash='#/project/fika';await c.settle();
+  assert.equal(c.doc.querySelector('.project-subtitle').textContent,'Social Media Content');
  }finally{await c.window.happyDOM.close()}
 });
