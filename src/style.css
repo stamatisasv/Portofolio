@@ -11,6 +11,10 @@ nav,.card-title,.project-intro h1{font-weight:700}
   z-index: 5;
   width: 46px;
   height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border: 1px solid #ffffff30;
   border-radius: 50%;
   background: #202020e8;
@@ -35,7 +39,7 @@ footer { padding-bottom: 90px; }
   .card-meta { font-size: 10px; letter-spacing: .06em; }
   .card-label { padding: 12px 20px; gap: 4px; }
   .project-intro h1 { font-family: 'Avenir Next', Avenir, 'Helvetica Neue', sans-serif; font-size: 22px; font-weight: 400; letter-spacing: .1em; }
-  .scroll-top { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); }
+  .scroll-top { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); width: 42px; height: 42px; }
 }
 
 .social-links a { min-width: 44px; justify-content: center; color: var(--muted); transition: color 180ms; }
@@ -328,7 +332,7 @@ footer { padding-bottom: 90px; }
  .dumbos-card.is-mobile-active::after { opacity: .68; }
 }
 
-.scroll-top { font-size: 12px; letter-spacing: .03em; }
+.scroll-top svg { display: block; flex: 0 0 22px; width: 22px; height: 22px; margin: 0; transform: translateY(-1px); }
 
 @media (max-width: 767px) {
  .recommendation-track { min-height: 0; margin: 0 12px; width: calc(100% - 24px); }

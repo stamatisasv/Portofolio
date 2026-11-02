@@ -44,7 +44,7 @@ const mobileNav=el('nav');mobileNav.setAttribute('aria-label','Mobile navigation
 if(site.email){const gmail=link('Write using Gmail',`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(site.email)}`,'gmail-link');gmail.target='_blank';gmail.rel='noopener noreferrer';dialog.append(gmail)}
 header.append(dialog);
 const toTop=el('button','scroll-top');
-toTop.textContent='Top';
+toTop.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>';
 toTop.type='button';toTop.setAttribute('aria-label','Scroll to top');
 function updateScrollTop(){
  const visible=window.scrollY>300&&location.hash!=='#/contact';
