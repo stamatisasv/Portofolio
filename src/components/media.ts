@@ -9,6 +9,7 @@ export function image(photo:Photo,eager=false,sizes='(max-width: 767px) 100vw, 4
 // Keep retries from an earlier autoplay attempt from muting a later user gesture.
 const refreshMute=new WeakMap<HTMLVideoElement,()=>void>();
 let audibleVideo:HTMLVideoElement|null=null;
+let audioContext:AudioContext|undefined;
 const visibleVideos=new Set<HTMLVideoElement>();
 const videoObserver=new IntersectionObserver(entries=>{
  for(const entry of entries){
@@ -66,21 +67,37 @@ export function media(block:MediaBlock):HTMLElement {
   const volume=element('input','video-volume');volume.type='range';volume.min='0';volume.max='1';volume.step='.01';volume.value='1';
   volume.setAttribute('aria-label',`Volume for ${videoTitle}`);
   let lastVolume=1;
+  let gain:GainNode|undefined;
+  let collapseTimer:ReturnType<typeof setTimeout>|undefined;
+  let adjusting=false;
+  const touchControls=()=>window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  function revealVolume(){
+   clearTimeout(collapseTimer);
+   audioControls.classList.add('is-expanded');
+   if(!adjusting)collapseTimer=setTimeout(()=>audioControls.classList.remove('is-expanded'),2000);
+  }
+  volume.addEventListener('pointerdown',()=>{adjusting=true;revealVolume()});
+  const finishAdjustment=()=>{adjusting=false;revealVolume()};
+  volume.addEventListener('pointerup',finishAdjustment);
+  volume.addEventListener('pointercancel',finishAdjustment);
+  volume.addEventListener('change',finishAdjustment);
 
   function updateMute(){
-   const muted=video.muted||video.volume===0;
+   const muted=video.muted||(gain?gain.gain.value:video.volume)===0;
    mute.innerHTML=`<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/>${muted?'<path d="m16 9 6 6m0-6-6 6"/>':'<path d="M15.5 8.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13"/>'}</svg>`;
    audioControls.classList.toggle('is-unmuted',!video.muted);
    volume.disabled=video.muted;
-   volume.value=String(video.volume);
-   volume.setAttribute('aria-valuetext',`${Math.round(video.volume*100)}%`);
+   const level=gain?gain.gain.value:video.volume;
+   volume.value=String(level);
+   volume.setAttribute('aria-valuetext',`${Math.round(level*100)}%`);
    mute.title=muted?'Unmute':'Mute';
    mute.setAttribute('aria-label',`${muted?'Unmute':'Mute'} ${videoTitle}`);
   }
   refreshMute.set(video,updateMute);
   video.addEventListener('volumechange',updateMute);
   mute.addEventListener('click',()=>{
-   const muted=!(video.muted||video.volume===0);
+   if(touchControls()&&!video.muted&&!audioControls.classList.contains('is-expanded')){revealVolume();return}
+   const muted=!(video.muted||(gain?gain.gain.value:video.volume)===0);
    if(!muted){
     document.querySelectorAll<HTMLVideoElement>('.video > video').forEach(other=>{
      if(other===video)return;
@@ -90,13 +107,26 @@ export function media(block:MediaBlock):HTMLElement {
     audibleVideo=video;
    }else if(audibleVideo===video)audibleVideo=null;
    playbackAttempts.set(video,(playbackAttempts.get(video)||0)+1);
-   video.muted=muted;if(!muted&&video.volume===0)video.volume=lastVolume;
+   video.muted=muted;if(!muted){if(gain){if(gain.gain.value===0)gain.gain.value=lastVolume;void audioContext?.resume().catch(()=>{})}else if(video.volume===0)video.volume=lastVolume;}
    if(!muted)startVideo(video);
+   if(!muted)revealVolume();
+   else {clearTimeout(collapseTimer);audioControls.classList.remove('is-expanded')}
    updateMute();
   });
   volume.addEventListener('input',()=>{
-   video.volume=Number(volume.value);
-   if(video.volume>0)lastVolume=video.volume;
+   const level=Number(volume.value);
+   video.volume=level;
+   // Some mobile browsers ignore HTMLMediaElement.volume; use an audio gain instead.
+   if(!gain&&Math.abs(video.volume-level)>.001&&typeof AudioContext!=='undefined'){
+    audioContext??=new AudioContext();
+    gain=audioContext.createGain();
+    audioContext.createMediaElementSource(video).connect(gain);
+    gain.connect(audioContext.destination);
+    video.volume=1;
+   }
+   if(gain){gain.gain.value=level;void audioContext?.resume().catch(()=>{})}
+   if(level>0)lastVolume=level;
+   revealVolume();
    updateMute();
   });
   audioControls.append(volume,mute);

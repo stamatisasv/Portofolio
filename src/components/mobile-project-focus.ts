@@ -14,6 +14,9 @@ export function initMobileProjectFocus(root:HTMLElement) {
     if(rect.width<=0||rect.height<=0||rect.bottom<=0||rect.top>=innerHeight||rect.right<=0||rect.left>=innerWidth)continue;
     const distance=Math.hypot((rect.top+rect.bottom)/2-innerHeight/2,(rect.left+rect.right)/2-innerWidth/2);
     if(distance<best){best=distance;next=card}
+    // At the page start, give the first project its own caption reveal even
+    // when a taller viewport puts the second project closer to the center.
+    if(card===cards[0]&&window.scrollY<=1){next=card;break}
    }
   }
   if(next===active)return;

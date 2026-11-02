@@ -584,3 +584,68 @@ test('mobile carousel has two rows with independently centered captions and retu
   assert.equal(c.doc.querySelectorAll('.recommendation-track .is-mobile-active').length,0);
  }finally{await c.window.happyDOM.close()}
 });
+
+test('touch volume collapses after adjustment and reopens without muting playback',async()=>{
+ const c=await setup('#/project/shisha-nomads',390);
+ try{
+  c.window.matchMedia=()=>({matches:true});
+  const controls=c.doc.querySelector('.video-audio');
+  const video=controls.parentElement.querySelector('video');
+  const slider=controls.querySelector('input');
+  const button=controls.querySelector('button');
+  button.click();await c.settle();
+  slider.dispatchEvent(new c.window.Event('pointerdown'));
+  slider.value='.4';slider.dispatchEvent(new c.window.Event('input'));
+  await new Promise(resolve=>setTimeout(resolve,2100));
+  assert.ok(controls.classList.contains('is-expanded'),'Keep the slider open during a drag');
+  slider.dispatchEvent(new c.window.Event('pointerup'));
+  await new Promise(resolve=>setTimeout(resolve,2100));
+  assert.equal(controls.classList.contains('is-expanded'),false);
+  assert.equal(video.volume,.4);
+  button.click();
+  assert.ok(controls.classList.contains('is-expanded'));
+  assert.equal(video.muted,false);
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('volume uses audio gain when the browser ignores media volume',async()=>{
+ const c=await setup('#/project/shisha-nomads',390);
+ try{
+  const controls=c.doc.querySelector('.video-audio');
+  const video=controls.parentElement.querySelector('video');
+  const slider=controls.querySelector('input');
+  const gain={gain:{value:1},connect(){}};
+  let connected=false;
+  c.window.AudioContext=class {
+   destination={};createGain(){return gain}
+   createMediaElementSource(target){assert.equal(target,video);return {connect(){connected=true}}}
+   resume(){return Promise.resolve()}
+  };
+  Object.defineProperty(video,'volume',{get:()=>1,set:()=>{}});
+  controls.querySelector('button').click();await c.settle();
+  slider.value='.3';slider.dispatchEvent(new c.window.Event('input'));
+  assert.equal(connected,true);assert.equal(gain.gain.value,.3);
+  assert.equal(slider.getAttribute('aria-valuetext'),'30%');
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('mobile first project reveals at page start, then follows the viewport center',async()=>{
+ const c=await setup('',390);
+ try{
+  const cards=[...c.doc.querySelectorAll('.work-grid .project-card')];
+  cards.forEach((card,i)=>{card.getBoundingClientRect=()=>({left:0,right:390,top:104+i*225,bottom:324+i*225,width:390,height:220})});
+  c.window.dispatchEvent(new c.window.Event('resize'));
+  await c.settle();await c.settle();
+  assert.ok(cards[0].classList.contains('is-mobile-active'));
+  assert.equal(cards[1].classList.contains('is-mobile-active'),false);
+  Object.defineProperty(c.window,'scrollY',{configurable:true,value:100});
+  c.window.dispatchEvent(new c.window.Event('scroll'));
+  await c.settle();await c.settle();
+  assert.equal(cards[0].classList.contains('is-mobile-active'),false);
+  assert.ok(cards[1].classList.contains('is-mobile-active'));
+  Object.defineProperty(c.window,'scrollY',{configurable:true,value:0});
+  c.window.dispatchEvent(new c.window.Event('scroll'));
+  await c.settle();await c.settle();
+  assert.ok(cards[0].classList.contains('is-mobile-active'));
+ }finally{await c.window.happyDOM.close()}
+});
