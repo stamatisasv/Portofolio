@@ -29,7 +29,7 @@ export function initMobileProjectFocus(root:HTMLElement) {
  mobile.addEventListener('change',schedule);
  return ()=>{
   observer.disconnect();active?.classList.remove('is-mobile-active');active=undefined;
-  cards=[...root.querySelectorAll<HTMLElement>('.project-card')];
+  cards=[...root.querySelectorAll<HTMLElement>('.work-grid .project-card')];
   cards.forEach(card=>observer.observe(card));schedule();
  };
 }

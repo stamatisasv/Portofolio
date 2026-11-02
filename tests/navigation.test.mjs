@@ -5,8 +5,9 @@ import {Window} from 'happy-dom';
 
 const files=await readdir(new URL('../dist/assets/',import.meta.url));
 const script=await readFile(new URL(`../dist/assets/${files.find(f=>f.endsWith('.js'))}`,import.meta.url),'utf8');
-async function setup(hash=''){
+async function setup(hash='',width=1024){
  const window=new Window({url:`https://example.com/Portofolio/${hash}`});
+ window.happyDOM.setWindowSize({width,height:800});
  window.document.body.innerHTML='<div id="app"></div>';
  window.IntersectionObserver=class {observe(){} disconnect(){}};
  window.scrollTo=()=>{};
@@ -560,5 +561,26 @@ test('2026 client projects follow the requested new order',async()=>{
   for(const [before,after] of [['longpress','samotrace'],['samotrace','reborn'],['reborn','skin-care-lab'],['skin-care-lab','dumbos']]){
    assert.equal(routes[routes.indexOf(`#/project/${before}`)+1],`#/project/${after}`);
   }
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('mobile carousel has two rows with independently centered captions and returns to one on desktop',async()=>{
+ const c=await setup('',390);
+ try{
+  const tracks=[...c.doc.querySelectorAll('.recommendation-track')];
+  assert.equal(tracks.length,2);
+  assert.ok(tracks[1].classList.contains('mobile-only-track'));
+  for(const track of tracks){
+   track.getBoundingClientRect=()=>({left:0,right:300,top:300,bottom:400,width:300,height:100});
+   [...track.children].forEach((card,i)=>{card.getBoundingClientRect=()=>({left:i*100,right:(i+1)*100,top:300,bottom:400,width:100,height:100})});
+  }
+  await c.settle();await c.settle();
+  for(const track of tracks){
+   assert.equal(track.querySelectorAll('.is-mobile-active').length,1);
+   assert.ok(track.children[1].classList.contains('is-mobile-active'));
+  }
+  c.window.happyDOM.setWindowSize({width:1280,height:800});c.window.dispatchEvent(new c.window.Event('resize'));await c.settle();await c.settle();
+  assert.equal(c.doc.querySelectorAll('.recommendation-track').length,1);
+  assert.equal(c.doc.querySelectorAll('.recommendation-track .is-mobile-active').length,0);
  }finally{await c.window.happyDOM.close()}
 });

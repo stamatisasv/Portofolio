@@ -95,11 +95,14 @@ function recommendationsCarousel(list:Project[],headingText='You may also like')
  section.setAttribute('aria-label','Recommended projects');
  section.setAttribute('aria-roledescription','carousel');
  const heading=el('div','related-heading');heading.append(el('h2','',headingText));
+ const mobile=matchMedia('(max-width: 767px)');
+ section.append(heading);
+ function createTrack(list:Project[],direction:number){
  const track=el('div','recommendation-track');
  list.forEach(p=>track.append(card(p)));
  // A second copy makes the wrap visually seamless; only originals appear in keyboard navigation.
  list.forEach(p=>{const copy=card(p);copy.tabIndex=-1;copy.setAttribute('aria-hidden','true');track.append(copy)});
- section.append(heading,track);
+
  const motion=matchMedia('(prefers-reduced-motion: reduce)');
  let frame=0;
  let lastTime=0;
@@ -138,18 +141,53 @@ function recommendationsCarousel(list:Project[],headingText='You may also like')
  track.addEventListener('click',event=>{
   if(suppressClick){event.preventDefault();event.stopPropagation();suppressClick=false}
  },{capture:true});
+ let centered:HTMLElement|undefined;
+ function updateCenteredCard(){
+  let next:HTMLElement|undefined;
+  if(mobile.matches){
+   const rect=track.getBoundingClientRect();
+   if(rect.width>0&&rect.bottom>0&&rect.top<innerHeight){
+    const center=rect.left+rect.width/2;
+    let nearest=Infinity;
+    for(const child of track.children){
+     const card=child as HTMLElement;const bounds=card.getBoundingClientRect();
+     const distance=Math.abs(bounds.left+bounds.width/2-center);
+     if(distance<nearest){nearest=distance;next=card}
+    }
+   }
+  }
+  if(next!==centered){centered?.classList.remove('is-mobile-active');next?.classList.add('is-mobile-active');centered=next}
+ }
  function tick(time:number) {
   if(lastTime&&!document.hidden&&!motion.matches&&pointerId===undefined&&time>=resumeAt&&!section.querySelector(':focus-visible')) {
    const first=track.children[0] as HTMLElement;
    const duplicate=track.children[list.length] as HTMLElement;
    const cycle=duplicate.offsetLeft-first.offsetLeft;
-   if(cycle>0){offset=(offset+Math.min(time-lastTime,50)*.028)%cycle;track.scrollLeft=offset;}
+   if(cycle>0){offset=((offset+Math.min(time-lastTime,50)*.028*direction)%cycle+cycle)%cycle;track.scrollLeft=offset;}
   }
+  updateCenteredCard();
   lastTime=time;
   frame=requestAnimationFrame(tick);
  }
  frame=requestAnimationFrame(tick);
- disposeCarousel=()=>{cancelAnimationFrame(frame);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',finishDrag)};
+ return {track,dispose:()=>{cancelAnimationFrame(frame);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',finishDrag);centered?.classList.remove('is-mobile-active')}};
+ }
+ const primary=createTrack(list,1);section.append(primary.track);
+ let secondary:ReturnType<typeof createTrack>|undefined;
+ let wasMobile:boolean|undefined;
+ function syncRows(){
+  if(wasMobile===mobile.matches)return;wasMobile=mobile.matches;
+  secondary?.dispose();secondary?.track.remove();secondary=undefined;
+  if(mobile.matches){
+   const midpoint=Math.ceil(list.length/2);
+   secondary=createTrack([...list.slice(midpoint),...list.slice(0,midpoint)],-1);
+   secondary.track.classList.add('mobile-only-track');
+   secondary.track.setAttribute('aria-label','More projects, reverse scrolling');
+   section.append(secondary.track);
+  }
+ }
+ mobile.addEventListener('change',syncRows);window.addEventListener('resize',syncRows);syncRows();
+ disposeCarousel=()=>{primary.dispose();secondary?.dispose();mobile.removeEventListener('change',syncRows);window.removeEventListener('resize',syncRows)};
  return section;
 }
 let previous='';let homeY=0;
@@ -159,7 +197,7 @@ function render(){
  disposeCarousel();
  if(previous==='#/')homeY=scrollY;
  main.querySelectorAll('video').forEach(video=>{video.pause();video.removeAttribute('src');video.load()});
- closeMenu();const route=location.hash||'#/';app.classList.toggle('contact-page',route==='#/contact');main.replaceChildren();let title='My work';
+ closeMenu();const route=location.hash||'#/';app.classList.toggle('contact-page',route==='#/contact');main.replaceChildren();let title='Projects';
  header.querySelectorAll('nav a').forEach(a=>{if(a.getAttribute('href')===(route==='#/contact'?'#/contact':'#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  if(route==='#/') {const heading=el('h1','sr-only','Photography and video');main.append(heading,grid(available));if(available.length)main.append(recommendationsCarousel(available,'Explore projects'));if(!available.length)main.append(el('p','empty','New work will be shared here soon.'));if(available.some(p=>p.demo))main.append(el('p','demo-note','Demo visual studies · Original photography and films coming soon.'))}
  else if(route==='#/contact'){title='Contact';const section=el('section','contact');section.append(el('h1','','Contact'));if(site.bio)section.append(el('p','',site.bio));section.append(contacts(true));if(!site.email&&!site.instagram&&!site.linkedin)section.append(el('p','','Contact details will be added soon.'));main.append(section)}
@@ -175,7 +213,7 @@ function render(){
  gallery.append(mixed);
 }else{const videos=p.blocks.filter(b=>b.type==='video');if(['shisha-nomads','film-lenses'].includes(p.id)){const pair=el('div',p.id==='film-lenses'?'lenses-video-pair':'video-pair');videos.forEach(b=>pair.append(media(b)));gallery.append(pair)}else if(['euro-zese','drakolimni','dolomites','skin-care-lab','reborn','healin-physio','athens','lemnian-honey','samotrace'].includes(p.id)){const videoGrid=el('div',p.id==='healin-physio'?'healin-video-grid':p.id==='athens'?'reborn-video-grid aerial-video-grid':['reborn','lemnian-honey'].includes(p.id)?'reborn-video-grid':p.id==='skin-care-lab'?'skincare-video-grid':p.id==='drakolimni'?'drakolimni-video-grid':'euro-video-grid');videos.forEach(b=>videoGrid.append(media(b)));gallery.append(videoGrid)}else videos.forEach(b=>gallery.append(media(b)));const stills=p.blocks.filter(b=>b.type!=='video');if(['mona-lisa','ase-me-mono','streetverse131','longpress','ftera','cypher','gia-panta','drakolimni','dolomites','film-lenses','skin-care-lab','healin-physio','wedding-in-lemnos','kompi','lemnian-honey','samotrace','psomi-alati','pappoudes'].includes(p.id)){const editorial=el('div',['samotrace','psomi-alati','pappoudes'].includes(p.id)?'new-photo-grid':p.id==='lemnian-honey'?'honey-photo-grid':p.id==='kompi'?'kompi-photo-grid':p.id==='healin-physio'?'healin-photo-grid':p.id==='skin-care-lab'?'postcard-grid':p.id==='film-lenses'?'lenses-photo-grid':p.id==='dolomites'?'postcard-grid':['cypher','gia-panta','drakolimni','dolomites'].includes(p.id)?'uncropped-grid':`editorial-grid editorial-${p.id}`);stills.filter(b=>b.type==='image').forEach(b=>{const frame=media(b);if(p.id==='lemnian-honey'&&frame instanceof HTMLImageElement)frame.sizes='(max-width: 767px) 50vw, (max-width: 1023px) 30vw, 23vw';if(p.id==='wedding-in-lemnos'&&b.type==='image'&&/still-(111|112|113|114|115|125|128|132)\.jpg$/.test(b.image.src))frame.classList.add('complete-frame');editorial.append(frame)});gallery.append(editorial);stills.filter(b=>b.type!=='image').forEach(b=>gallery.append(media(b)))}else stills.forEach(b=>gallery.append(media(b)));}if(!['skin-care-lab','reborn'].includes(p.id))gallery.append(image(p.cover,false,'(max-width: 767px) 100vw, min(92vw, 1400px)'));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{title='Page not found';const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
  refreshMobileCards();
- document.title=`${title} — ${site.name}`;if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
+ document.title=route==='#/'||route==='#/contact'?`${site.name} ${title}`:`${title} — ${site.name}`;if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }
 window.addEventListener('hashchange',render);render();
 

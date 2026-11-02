@@ -329,3 +329,13 @@ footer { padding-bottom: 90px; }
 }
 
 .scroll-top { font-size: 12px; letter-spacing: .03em; }
+
+@media (max-width: 767px) {
+ .recommendation-track { min-height: 0; margin: 0 12px; width: calc(100% - 24px); }
+ .recommendation-track + .recommendation-track { margin-top: 6px; }
+ .recommendation-track > .project-card { flex: 0 0 calc((100% - 10px) / 3); aspect-ratio: 1; }
+ .recommendation-track .card-label { padding: 7px 5px; gap: 4px; }
+ .recommendation-track .card-title { font-size: clamp(10px, 2.7vw, 14px); line-height: 1.2; letter-spacing: .03em; }
+ .recommendation-track .card-subtitle { font-size: clamp(8px, 2.2vw, 11px); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+ .recommendation-track .card-meta { font-size: 8px; }
+}
