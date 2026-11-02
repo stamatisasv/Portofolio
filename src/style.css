@@ -283,7 +283,6 @@ footer { padding-bottom: 90px; }
 @media (max-width: 1023px) { .honey-photo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 767px) { .honey-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; } }
 
-.scroll-top .top-chevron { display: block; width: 11px; height: 11px; margin: 5px auto 0; border-top: 1.5px solid currentColor; border-left: 1.5px solid currentColor; transform: rotate(45deg); }
 .video-mute { display: grid; place-items: center; width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 50%; }
 .video-mute svg { display: block; pointer-events: none; }
 
@@ -315,3 +314,18 @@ footer { padding-bottom: 90px; }
 .mixed-wide-videos > .video { min-width: 0; width: 100%; }
 .mixed-wide-videos > .video:only-child { grid-column: 1 / -1; }
 @media (max-width: 900px) { .mixed-wide-videos { grid-template-columns: minmax(0, 1fr); } }
+
+/* Mobile cards reveal centered captions as they move through the viewport center. */
+@media (max-width: 767px) {
+ .project-card .card-label { inset: 0; align-items: center; justify-content: center; padding: 18px; gap: 8px; background: transparent; opacity: 0; text-align: center; transition: opacity 350ms ease; }
+ .project-card .card-subtitle { text-align: center; max-width: 32ch; }
+ .project-card .card-title { font-size: clamp(20px, 5vw, 27px); }
+ .project-card > img { transition: filter 350ms ease; }
+ .project-card:hover:not(.is-mobile-active):not(:focus-visible) .card-label { opacity: 0; }
+ .project-card.is-mobile-active .card-label, .project-card:focus-visible .card-label { opacity: 1; }
+ .project-card.is-mobile-active > img { filter: brightness(.32); }
+ .dumbos-card.is-mobile-active > img { filter: none; }
+ .dumbos-card.is-mobile-active::after { opacity: .68; }
+}
+
+.scroll-top { font-size: 12px; letter-spacing: .03em; }

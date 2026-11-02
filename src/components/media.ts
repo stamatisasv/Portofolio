@@ -105,7 +105,7 @@ export function media(block:MediaBlock):HTMLElement {
   videoObserver.observe(video);
   return wrapper;
  }
- const play=element('button','video-play');play.type='button';play.append(image(block.poster),element('span','',`Play ${block.title} ↗`));
+ const play=element('button','video-play');play.type='button';play.append(image(block.poster),element('span','',`Play ${block.title}`));
  play.addEventListener('click',()=>{
   const valid=block.provider==='youtube'?/^[a-zA-Z0-9_-]{11}$/:/^\d+$/;
   if(!valid.test(block.source)){play.replaceChildren(element('span','','Video unavailable'));return}
