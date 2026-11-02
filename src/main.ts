@@ -235,6 +235,7 @@ function render(){
  p.blocks.forEach(block=>{
   const frame=media(block);
   frame.classList.add(block.type==='video'&&block.aspectRatio==='1 / 1'?'koziakas-square':'koziakas-wide');
+  if(block.type==='image'&&block.image.src.includes('/photo-4-'))frame.classList.add('koziakas-feature');
   editorial.append(frame);
  });
  gallery.append(editorial);

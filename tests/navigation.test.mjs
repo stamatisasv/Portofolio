@@ -722,13 +722,14 @@ test('Drivio keeps the panorama halves together and includes its film and A5 des
  }finally{await c.window.happyDOM.close()}
 });
 
-test('Koziakas combines all 18 films and four collages; updated projects show their supplied years',async()=>{
+test('Koziakas combines all 18 films and three collages; updated projects show their supplied years',async()=>{
  const c=await setup('#/project/koziakas');
  try{
   const grid=c.doc.querySelector('.koziakas-editorial');
   assert.ok(grid);
   assert.equal(grid.querySelectorAll('video').length,18);
-  assert.equal(grid.querySelectorAll('img').length,4);
+  assert.equal(grid.querySelectorAll('img').length,3);
+  assert.equal(grid.querySelector('img[src*="photo-3-"]'),null);
   assert.equal(grid.querySelectorAll('.koziakas-square').length,6);
   assert.equal(grid.querySelectorAll('.video.koziakas-wide').length,12);
   for(const el of grid.querySelectorAll('img,video')){

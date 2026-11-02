@@ -6,17 +6,17 @@ export const koziakasProject:Project = {
   "title": "Koziakas",
   "year": "2026",
   "cover": {
-    "src": "media/projects/koziakas/photo-1-1600.webp",
-    "alt": "Koziakas \u2014 mountain trip photo collage 1",
+    "src": "media/projects/koziakas/cover-1600.webp",
+    "alt": "Koziakas \u2014 snow-covered fir trees and mountain view, first frame of horizontal 4",
     "width": 1600,
-    "height": 2000,
+    "height": 900,
     "variants": [
       {
-        "src": "media/projects/koziakas/photo-1-600.webp",
+        "src": "media/projects/koziakas/cover-600.webp",
         "width": 600
       },
       {
-        "src": "media/projects/koziakas/photo-1-1600.webp",
+        "src": "media/projects/koziakas/cover-1600.webp",
         "width": 1600
       }
     ]
@@ -177,25 +177,6 @@ export const koziakasProject:Project = {
       },
       "title": "Koziakas \u2014 mountain film 12",
       "aspectRatio": "16 / 9"
-    },
-    {
-      "type": "image",
-      "image": {
-        "src": "media/projects/koziakas/photo-3-1600.webp",
-        "alt": "Koziakas \u2014 mountain trip photo collage 3",
-        "width": 1600,
-        "height": 1600,
-        "variants": [
-          {
-            "src": "media/projects/koziakas/photo-3-600.webp",
-            "width": 600
-          },
-          {
-            "src": "media/projects/koziakas/photo-3-1600.webp",
-            "width": 1600
-          }
-        ]
-      }
     },
     {
       "type": "image",
