@@ -34,7 +34,7 @@ test('mobile tap remains actionable after trigger blur, then Contact and Work na
    assert.equal(c.doc.querySelector('main h1').textContent,'Contact');
    assert.equal(c.doc.querySelectorAll('main .contact-detail').length,3);
    assert.equal(c.menu.inert,true);assert.equal(c.button.getAttribute('aria-expanded'),'false');
-   assert.match(c.window.document.title,/Contact/);
+   assert.equal(c.window.document.title,'Asvestas Stamatis');
    c.button.click();c.work.click();await c.settle();
    assert.equal(c.window.location.hash,'#/');assert.ok(c.doc.querySelector('main .work-grid'));
   }
@@ -86,13 +86,13 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,25);
+  assert.equal(routes.length,26);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
    const section=c.doc.querySelector('main .related');
    assert.ok(gallery,route);
-   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens'].includes(route)){
+   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
     assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
@@ -116,7 +116,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,25);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,26);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -258,7 +258,7 @@ test('home projects and carousel are ordered newest year first',async()=>{
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
    const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].map(el=>Number(el.textContent));
-   assert.equal(years.length,25);
+   assert.equal(years.length,26);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
    assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
   }
@@ -670,5 +670,31 @@ test('silent clips have no audio controls while audible clips keep them',async()
   assert.equal(aerial[1].querySelector('.video-audio'),null);
   assert.equal(c.doc.querySelectorAll('.gallery .video-audio').length,5);
   assert.ok(aerial.every(wrapper=>wrapper.querySelector('video').dataset.source.includes('/web-optimized/')));
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Kaveira opens from the first 2025 card with all thesis media',async()=>{
+ const c=await setup();
+ try{
+  const cards=[...c.doc.querySelectorAll('.work-grid .project-card')];
+  const index=cards.findIndex(card=>card.getAttribute('href')==='#/project/kaveira-3d');
+  assert.ok(index>=0);
+  assert.equal(cards[index+1].getAttribute('href'),'#/project/mona-lisa');
+  assert.equal(cards.slice(0,index).some(card=>card.textContent.includes('2025')),false);
+  cards[index].click();await c.settle();
+  assert.equal(c.doc.querySelector('main h1').textContent,'Kaveira 3D');
+  assert.equal(c.doc.querySelectorAll('.kaveira-editorial video').length,3);
+  assert.equal(c.doc.querySelectorAll('.kaveira-editorial .video-audio').length,0);
+  assert.ok(cards[index].querySelector('img').getAttribute('src').endsWith('/screenshot-18.jpg'));
+  assert.equal(c.doc.querySelectorAll('.kaveira-photo-grid > img').length,28);
+  const editorial=c.doc.querySelector('.kaveira-editorial');
+  assert.deepEqual([...editorial.querySelectorAll('video')].map(video=>video.dataset.source.split('/').at(-1)),['walkthrough-3.mp4','walkthrough-2.mp4','walkthrough-1.mp4']);
+  assert.equal(editorial.children[1].querySelectorAll('img').length,3);
+  assert.deepEqual([...editorial.lastElementChild.querySelectorAll('img')].map(img=>img.getAttribute('src').split('/').at(-1)),['screenshot-1.jpg','screenshot-2.jpg','screenshot-3.jpg']);
+  for(const term of ['Unity','Kaveiria','Lemnos','Hellenistic temple'])assert.ok(c.doc.querySelector('.gallery .caption').textContent.includes(term));
+  for(const element of c.doc.querySelectorAll('.kaveira-photo-grid img, .kaveira-editorial video')){
+   const src=element.dataset.source||element.getAttribute('src');
+   await access(new URL(`../public/${src.replace(/^.*?media\//,'media/')}`,import.meta.url));
+  }
  }finally{await c.window.happyDOM.close()}
 });

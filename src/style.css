@@ -358,3 +358,12 @@ footer { padding-bottom: 90px; }
 @media (max-width: 767px) {
  .healin-website-grid > img:nth-child(n) { grid-column: 1 / -1; }
 }
+
+/* Full-width walkthroughs punctuate larger stills and compact photo rows. */
+.kaveira-editorial { display: flex; flex-direction: column; gap: clamp(8px, 1.2vw, 18px); }
+.kaveira-editorial > .video { width: 100%; min-width: 0; }
+.kaveira-photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(5px, .7vw, 10px); align-items: start; }
+.kaveira-photo-grid > img { width: 100%; height: auto; }
+.kaveira-photo-grid > img:first-child:nth-last-child(odd) { grid-column: 1 / -1; }
+.kaveira-closing { margin-top: clamp(16px, 3vw, 40px); }
+@media (max-width: 600px) { .kaveira-photo-grid { gap: 5px; } }

@@ -1,3 +1,4 @@
+import {kaveiraProject} from './kaveira';
 import {additionalProjects} from './new-projects';
 import {honeyPhotos} from './honey';
 import {healinPhotos} from './healin';
@@ -241,3 +242,5 @@ moveProjectAfter('skin-care-lab','reborn');
 moveProjectAfter('dumbos','skin-care-lab');
 const last2026=projects.filter(project=>project.year==='2026'&&project.id!=='psomi-alati').at(-1)!;
 moveProjectAfter('psomi-alati',last2026.id);
+
+projects.splice(projects.findIndex(project=>project.id==='mona-lisa'),0,kaveiraProject);
