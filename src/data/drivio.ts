@@ -148,7 +148,7 @@ const photos:Record<string,Photo> = {
 };
 
 export const drivioProject:Project={
-  id:'drivio',slug:'drivio',title:'Drivio',category:'Social Media Content & Print Design',
+  id:'drivio',slug:'drivio',year:'2026',title:'Drivio',category:'Social Media Content & Print Design',
   cover:photos['photo-4']!,published:true,
   blocks:[
     {type:'row',images:[photos['part-1']!,photos['part-2']!]},

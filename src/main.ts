@@ -230,6 +230,14 @@ function render(){
   editorial.append(frame);
  });
  gallery.append(editorial);
+}else if(p.id==='koziakas'){
+ const editorial=el('div','koziakas-editorial');
+ p.blocks.forEach(block=>{
+  const frame=media(block);
+  frame.classList.add(block.type==='video'&&block.aspectRatio==='1 / 1'?'koziakas-square':'koziakas-wide');
+  editorial.append(frame);
+ });
+ gallery.append(editorial);
 }else if(p.id==='dali-drops'){
  const opening=el('div','dali-opening-grid');
  const photos=el('div','mixed-media-grid');
@@ -251,7 +259,7 @@ function render(){
  const screenshots=el('div','editorial-grid healin-website-grid');
  healinWebsiteScreenshots.forEach(photo=>screenshots.append(image(photo,false,'(max-width: 767px) 100vw, (max-width: 1023px) 46vw, 700px')));
  website.append(screenshots);gallery.append(website);
-}if(!['skin-care-lab','reborn','athens','kaveira-3d','fika','drivio','dali-drops'].includes(p.id))gallery.append(image(p.cover,false,'(max-width: 767px) 100vw, min(92vw, 1400px)'));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
+}if(!['skin-care-lab','reborn','athens','kaveira-3d','fika','drivio','dali-drops','koziakas'].includes(p.id))gallery.append(image(p.cover,false,'(max-width: 767px) 100vw, min(92vw, 1400px)'));main.append(intro,gallery);const related=(p.relatedIds?.map(id=>available.find(q=>q.id===id)).filter((q):q is Project=>!!q&&q.id!==p.id)||[]);const recommendations=[...related,...available.filter(q=>q.id!==p.id&&!related.some(r=>r.id===q.id))];if(recommendations.length)main.append(recommendationsCarousel(recommendations));}else{const section=el('section','contact');section.append(el('h1','','Page not found'),link('Return to work','#/'));main.append(section)}}
  refreshMobileCards();
  document.title='Asvestas Stamatis';if(previous)main.focus({preventScroll:true});window.scrollTo(0,route==='#/'?homeY:0);previous=route;
 }

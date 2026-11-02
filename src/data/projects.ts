@@ -1,3 +1,4 @@
+import {koziakasProject} from './koziakas';
 import {daliDropsProject} from './dali-drops';
 import {drivioProject} from './drivio';
 import {fikaProject} from './fika';
@@ -221,7 +222,7 @@ honeyBlocks.push({type:'row',images:[1,2].map(n=>({src:`media/projects/lemnian-h
 projects.push({id:'lemnian-honey',slug:'lemnian-honey',title:'Lemnian Honey',year:'2026',category:'Product Photography & Video',
   cover:honeyCover,coverPosition:'center 58%',blocks:honeyBlocks,published:true});
 
-projects.push(fikaProject, drivioProject, daliDropsProject, ...additionalProjects);
+projects.push(fikaProject, drivioProject, daliDropsProject, koziakasProject, ...additionalProjects);
 
 // Stable sorting preserves the curated order for projects from the same year.
 projects.sort((a,b)=>Number(b.year||0)-Number(a.year||0));

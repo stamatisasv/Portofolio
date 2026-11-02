@@ -458,7 +458,7 @@ const film=(name:string,title:string):MediaBlock=>({
 });
 const still=(image:Photo):MediaBlock=>({type:'image',image});
 export const daliDropsProject:Project={
-  id:'dali-drops',slug:'dali-drops',title:'Dali - Drops',category:'Social Media Content',
+  id:'dali-drops',slug:'dali-drops',year:'2025',title:'Dali - Drops',category:'Social Media Content',
   cover:photos.find(photo=>photo.src.includes('/asv07138-'))!,galleryLayout:'mixed',published:true,
   blocks:[
     still(photos[0]!),film('final-dali','Social media film'),still(photos[1]!),

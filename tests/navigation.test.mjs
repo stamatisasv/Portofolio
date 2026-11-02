@@ -86,13 +86,13 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,29);
+  assert.equal(routes.length,30);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
    const section=c.doc.querySelector('main .related');
    assert.ok(gallery,route);
-   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d','#/project/fika','#/project/drivio','#/project/dali-drops'].includes(route)){
+   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d','#/project/fika','#/project/drivio','#/project/dali-drops','#/project/koziakas'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
     assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
@@ -116,7 +116,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,29);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,30);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -258,7 +258,7 @@ test('home projects and carousel are ordered newest year first',async()=>{
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
    const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].filter(el=>el.textContent.trim()).map(el=>Number(el.textContent));
-   assert.equal(years.length,26);
+   assert.equal(years.length,30);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
    assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
   }
@@ -719,5 +719,26 @@ test('Drivio keeps the panorama halves together and includes its film and A5 des
   }
   c.window.location.hash='#/project/fika';await c.settle();
   assert.equal(c.doc.querySelector('.project-subtitle').textContent,'Social Media Content');
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('Koziakas combines all 18 films and four collages; updated projects show their supplied years',async()=>{
+ const c=await setup('#/project/koziakas');
+ try{
+  const grid=c.doc.querySelector('.koziakas-editorial');
+  assert.ok(grid);
+  assert.equal(grid.querySelectorAll('video').length,18);
+  assert.equal(grid.querySelectorAll('img').length,4);
+  assert.equal(grid.querySelectorAll('.koziakas-square').length,6);
+  assert.equal(grid.querySelectorAll('.video.koziakas-wide').length,12);
+  for(const el of grid.querySelectorAll('img,video')){
+   for(const src of [el.getAttribute('src'),el.getAttribute('poster'),el.dataset.source].filter(Boolean)){
+    await access(new URL('../public/'+src.replace('/Portofolio/',''),import.meta.url));
+   }
+  }
+  for(const [slug,year] of [['koziakas','2026'],['drivio','2026'],['fika','2026'],['dali-drops','2025']]){
+   c.window.location.hash=`#/project/${slug}`;await c.settle();
+   assert.equal(c.doc.querySelector('.project-intro .eyebrow').textContent,year);
+  }
  }finally{await c.window.happyDOM.close()}
 });

@@ -431,6 +431,6 @@ const blocks:MediaBlock[]=[still(0),film('beach-film','Beach bar film'),still(7)
   ...[13,14,3,15,16,17,4].map(still),film('sando','Sando'),
   ...[18,19,20,5,21,22,23,6,24,25].map(still)];
 export const fikaProject:Project={
-  id:'fika',slug:'fika',title:'Fika',category:'Social Media Content',
+  id:'fika',slug:'fika',year:'2026',title:'Fika',category:'Social Media Content',
   cover:photos[0]!,galleryLayout:'mixed',blocks,published:true,
 };
