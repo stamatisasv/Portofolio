@@ -92,7 +92,7 @@ test('every project page includes a recommendations carousel after its gallery',
    const gallery=c.doc.querySelector('main .gallery');
    const section=c.doc.querySelector('main .related');
    assert.ok(gallery,route);
-   if(!['#/project/skin-care-lab','#/project/reborn'].includes(route)){
+   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
     assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
@@ -233,7 +233,7 @@ test('Euro displays all eight landscape clips in a video grid before its thumbna
   assert.equal(clips.length,8);
   assert.ok(clips.every(clip=>clip.style.aspectRatio==='16 / 9'));
   assert.ok([...grid.querySelectorAll('video')].every(video=>video.muted&&!video.controls));
-  assert.equal(grid.querySelectorAll('.video-mute').length,8);
+  assert.equal(grid.querySelectorAll('.video-mute').length,7);
   assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.jpg$/);
  }finally{await c.window.happyDOM.close()}
 });
@@ -378,6 +378,10 @@ test('Healin Physio includes its website link, nine clips and thirteen photos',a
   const gallery=c.doc.querySelector('.gallery');
   assert.equal(gallery.querySelectorAll('.healin-video-grid video').length,9);
   assert.equal(gallery.querySelectorAll('.healin-photo-grid img').length,13);
+  const screenshots=[...gallery.querySelectorAll('.healin-website-grid img')];
+  assert.equal(screenshots.length,15);
+  assert.ok(screenshots.every(img=>img.alt.startsWith('Healin Physio website — ')&&img.srcset&&img.loading==='lazy'));
+  assert.equal(gallery.querySelector('.healin-photo-grid').nextElementSibling.className,'healin-website');
   assert.equal(gallery.querySelector('.healin-video-grid .video').style.aspectRatio,'16 / 9');
   assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.jpg$/);
   for(const el of gallery.querySelectorAll('img,video')){
@@ -439,7 +443,7 @@ test('Aerial Production 2025 combines Athens and FPV films',async()=>{
   assert.equal(gallery.querySelector('.rotated-video').style.getPropertyValue('--video-rotation'),'-90deg');
   assert.equal([...gallery.querySelectorAll('.video')].filter(v=>v.style.aspectRatio==='9 / 16').length,4);
   assert.equal([...gallery.querySelectorAll('.video')].filter(v=>v.style.aspectRatio==='16 / 9').length,2);
-  assert.match(gallery.lastElementChild.getAttribute('src'),/athens\/cover\.jpg$/);
+  assert.equal(gallery.querySelector(':scope > img'),null);
   for(const el of gallery.querySelectorAll('img,video')){
    const url=el.dataset.source||el.src;
    await readFile(new URL(`../public/${new URL(url,'https://example.com').pathname.replace('/Portofolio/','')}`,import.meta.url));
@@ -647,5 +651,24 @@ test('mobile first project reveals at page start, then follows the viewport cent
   c.window.dispatchEvent(new c.window.Event('scroll'));
   await c.settle();await c.settle();
   assert.ok(cards[0].classList.contains('is-mobile-active'));
+ }finally{await c.window.happyDOM.close()}
+});
+
+test('silent clips have no audio controls while audible clips keep them',async()=>{
+ const c=await setup('#/project/healin-physio');
+ try{
+  assert.equal(c.doc.querySelectorAll('.gallery video').length,9);
+  assert.equal(c.doc.querySelectorAll('.gallery .video-audio').length,0);
+  c.window.location.hash='#/project/euro-zese';await c.settle();
+  const euro=[...c.doc.querySelectorAll('.gallery .video')];
+  assert.equal(euro.length,8);
+  assert.equal(euro[7].querySelector('.video-audio'),null);
+  assert.ok(euro.slice(0,7).every(wrapper=>wrapper.querySelector('.video-audio')));
+  c.window.location.hash='#/project/athens';await c.settle();
+  const aerial=[...c.doc.querySelectorAll('.gallery .video')];
+  assert.equal(aerial.length,6);
+  assert.equal(aerial[1].querySelector('.video-audio'),null);
+  assert.equal(c.doc.querySelectorAll('.gallery .video-audio').length,5);
+  assert.ok(aerial.every(wrapper=>wrapper.querySelector('video').dataset.source.includes('/web-optimized/')));
  }finally{await c.window.happyDOM.close()}
 });

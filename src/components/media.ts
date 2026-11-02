@@ -52,6 +52,7 @@ export function media(block:MediaBlock):HTMLElement {
   video.muted=true;video.defaultMuted=true;
   video.preload='none';video.volume=1;video.loop=true;video.poster=asset(block.poster.src);video.dataset.source=asset(block.source);
   video.setAttribute('aria-label',block.title);wrapper.append(video);
+  if(block.hasAudio===false){video.autoplay=false;videoObserver.observe(video);return wrapper}
   const videoTitle=block.title;
   const audioControls=element('div','video-audio');
   let pointerFocus=false;

@@ -42,7 +42,7 @@ export const projects:Project[] = entries.map(entry=>{
   if(slug==='euro-zese'){
     blocks.splice(0,blocks.length,...Array.from({length:8},(_,i):MediaBlock=>({
       type:'video',provider:'file',source:`media/projects/${slug}/web-1080p/vfx-${i+1}.mp4`,
-      poster:cover,title:`Zese — Euro — ${i===7?'Smoke text':`VFX ${i+1}`}`,aspectRatio:'16 / 9',
+      poster:cover,title:`Zese — Euro — ${i===7?'Smoke text':`VFX ${i+1}`}`,aspectRatio:'16 / 9',hasAudio:i!==7,
     })));
   }
   if(slug==='mona-lisa'){
@@ -175,7 +175,7 @@ const healinVideoNames=['edit','back-massage-card','suction-cups-card','exercise
   'electric-trapes-cards','head-massage-card','needling-cards','red-lamp-card'];
 const healinBlocks:MediaBlock[]=healinVideoNames.map((name,i)=>({type:'video',provider:'file',
   source:`media/projects/healin-physio/${name}.mp4`,poster:healinCover,
-  title:`Healin Physio — ${i===0?'showreel':name.replaceAll('-',' ')}`,aspectRatio:i===0?'16 / 9':'4 / 5'}));
+  title:`Healin Physio — ${i===0?'showreel':name.replaceAll('-',' ')}`,aspectRatio:i===0?'16 / 9':'4 / 5',hasAudio:false}));
 healinPhotos.forEach(image=>healinBlocks.push({type:'image',image}));
 projects.push({id:'healin-physio',slug:'healin-physio',title:'Healin Physio',year:'2026',category:'Website Design & Content Production',
   websiteUrl:'https://healinphysio.com/',cover:healinCover,coverPosition:'center 25%',blocks:healinBlocks,published:true});
@@ -196,8 +196,8 @@ const athensFilms=[['akropolisnew1','Acropolis'],['DJI_0164','City aerial study'
   ['pireausdust','Piraeus in the haze'],['towerofpireaus','Piraeus Tower'],
   ['anogfpvreel','FPV drone reel','16 / 9'],['karabi-sporrts','FPV boat and watersports','16 / 9']];
 projects.push({id:'athens',slug:'athens',title:'Aerial Production',year:'2025',cover:athensCover,published:true,
-  blocks:athensFilms.map(([name,title,ratio])=>({type:'video',provider:'file',source:`media/projects/athens/${['anogfpvreel','karabi-sporrts'].includes(name!)?'web-1080p/':''}${name}.mp4`,
-    poster:athensCover,title:`Aerial Production — ${title}`,aspectRatio:ratio||'9 / 16',rotation:name==='anogfpvreel'?-90:undefined}))});
+  blocks:athensFilms.map(([name,title,ratio])=>({type:'video',provider:'file',source:`media/projects/athens/web-optimized/${name}.mp4`,
+    poster:athensCover,title:`Aerial Production — ${title}`,aspectRatio:ratio||'9 / 16',hasAudio:name!=='DJI_0164',rotation:name==='anogfpvreel'?-90:undefined}))});
 
 const kompiCover=photo('kompi','cover','Kompi — golden-hour landscape and travel collage',1013,1800);
 const kompiBlocks:MediaBlock[]=[{type:'video',provider:'file',source:'media/projects/kompi/film.mp4',
