@@ -86,13 +86,13 @@ test('every project page includes a recommendations carousel after its gallery',
  const c=await setup();
  try{
   const routes=[...c.doc.querySelectorAll('main .work-grid .project-card')].map(a=>a.getAttribute('href'));
-  assert.equal(routes.length,30);
+  assert.equal(routes.length,31);
   for(const route of routes){
    c.window.location.hash=route;await c.settle();
    const gallery=c.doc.querySelector('main .gallery');
    const section=c.doc.querySelector('main .related');
    assert.ok(gallery,route);
-   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d','#/project/fika','#/project/drivio','#/project/dali-drops','#/project/koziakas'].includes(route)){
+   if(!['#/project/skin-care-lab','#/project/reborn','#/project/athens','#/project/kaveira-3d','#/project/fika','#/project/drivio','#/project/dali-drops','#/project/koziakas','#/project/karnalh-vlog-beyond'].includes(route)){
     assert.equal(gallery.lastElementChild.tagName,'IMG',route);
     assert.match(gallery.lastElementChild.getAttribute('src'),/cover\.(jpg|webp)$|pending\.svg$|upcoming\.svg$/,route);
    }else{
@@ -116,7 +116,7 @@ test('home includes an automatically scrolling project carousel below the grid',
   const carousel=c.doc.querySelector('main .related');
   assert.equal(grid.nextElementSibling,carousel);
   assert.equal(carousel.querySelector('h2').textContent,'Explore projects');
-  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,30);
+  assert.equal(carousel.querySelectorAll('.project-card:not([aria-hidden])').length,31);
   assert.equal(carousel.querySelectorAll('button').length,0);
   c.window.location.hash='#/project/shisha-nomads';await c.settle();
   assert.equal(c.doc.querySelector('main h1').textContent,'The Shisha Nomads');
@@ -258,7 +258,7 @@ test('home projects and carousel are ordered newest year first',async()=>{
  try{
   for(const selector of ['.work-grid > .project-card','.recommendation-track > .project-card:not([aria-hidden])']){
    const years=[...c.doc.querySelectorAll(`main ${selector} .card-meta`)].filter(el=>el.textContent.trim()).map(el=>Number(el.textContent));
-   assert.equal(years.length,30);
+   assert.equal(years.length,31);
    assert.deepEqual(years,[...years].sort((a,b)=>b-a));
    assert.equal(years[0],2026);assert.equal(years.at(-1),2023);
   }

@@ -222,6 +222,15 @@ honeyBlocks.push({type:'row',images:[1,2].map(n=>({src:`media/projects/lemnian-h
 projects.push({id:'lemnian-honey',slug:'lemnian-honey',title:'Lemnian Honey',year:'2026',category:'Product Photography & Video',
   cover:honeyCover,coverPosition:'center 58%',blocks:honeyBlocks,published:true});
 
+const vlogCover=photo('karnalh-vlog-beyond','still-156','Karnalh | Vlog — Beyond',1800,1012);
+projects.push({id:'karnalh-vlog-beyond',slug:'karnalh-vlog-beyond',artist:'Karnalh',title:'Vlog - Beyond',year:'2025',
+  category:'Vlog',youtubeUrl:'https://www.youtube.com/watch?v=FviPlRy5PQA',cover:vlogCover,published:true,
+  relatedIds:['mona-lisa','ase-me-mono','gia-panta'],
+  blocks:[{type:'video',provider:'file',source:'media/projects/karnalh-vlog-beyond/trailer.mp4',
+    poster:vlogCover,title:'Karnalh — Vlog - Beyond — trailer',aspectRatio:'9 / 16'},
+    ...Array.from({length:15},(_,i):MediaBlock=>({type:'image',image:photo('karnalh-vlog-beyond',`still-${i+156}`,
+      `Karnalh — Vlog - Beyond — ${['Opening title','Day 1 title','Studio session with Beyond title','Recording session','Studio collaboration','Studio conversation with subtitles','Studio wide shot','Gold record detail','Day 3 title','Photoshoot session title','Behind the scenes portrait','Portrait in purple smoke','Portrait in warm light','Reviewing photographs','D.N.A album announcement'][i]}`,1800,1012)}))]});
+
 projects.push(fikaProject, drivioProject, daliDropsProject, koziakasProject, ...additionalProjects);
 
 // Stable sorting preserves the curated order for projects from the same year.

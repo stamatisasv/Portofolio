@@ -415,3 +415,16 @@ footer { padding-bottom: 90px; }
  .koziakas-editorial > .koziakas-square { grid-column: span 1; }
  .koziakas-editorial > .koziakas-square:nth-child(7), .koziakas-editorial > .koziakas-square:nth-child(15) { grid-column: 1 / -1; width: min(100%, 540px); justify-self: center; }
 }
+
+/* Vlog chapter cards retain their typography; candid frames can crop freely. */
+.editorial-vlog > img:nth-child(n) { grid-column: span 4; aspect-ratio: 1; }
+.editorial-vlog > img:nth-child(4),
+.editorial-vlog > img:nth-child(7),
+.editorial-vlog > img:nth-child(12) { grid-column: span 8; aspect-ratio: 16 / 9; }
+.editorial-vlog > img.vlog-title-frame { grid-column: 1 / -1; aspect-ratio: auto; height: auto; object-fit: contain; }
+@media (max-width: 767px) {
+ .editorial-vlog > img:nth-child(n) { grid-column: span 1; aspect-ratio: 1; }
+ .editorial-vlog > img:nth-child(4), .editorial-vlog > img:nth-child(7),
+ .editorial-vlog > img:nth-child(12) { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+ .editorial-vlog > img.vlog-title-frame { grid-column: 1 / -1; aspect-ratio: auto; height: auto; }
+}
